@@ -16,7 +16,11 @@ class WalletService {
     },
   });
 
-  static getWalletByCurrency = async (userId, currency, walletId) => Wallet.findAll({
+  static getOtherWalletByCurrency = async (
+    userId,
+    currency,
+    walletId,
+  ) => Wallet.findAll({
     where: {
       user_id: userId,
       [Op.and]: { currency },

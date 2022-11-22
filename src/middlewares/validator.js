@@ -48,6 +48,13 @@ const validationRules = (service) => {
       ];
     }
 
+    case Services.UpdateTransaction: {
+      return [
+        body(constants.TypeTransaction, Errors.InvalidTypeTransaction).isIn(['expense', 'income', 'transfer']),
+        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
+      ];
+    }
+
     default: {
       return null;
     }

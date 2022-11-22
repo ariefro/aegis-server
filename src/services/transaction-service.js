@@ -11,6 +11,13 @@ class TransactionService {
     },
   });
 
+  static getTransactionByID = async (userId, id) => Transaction.findOne({
+    where: {
+      user_id: userId,
+      [Op.and]: { id },
+    },
+  });
+
   static addTransaction = async ({
     walletId,
     toWalletId,
@@ -26,6 +33,27 @@ class TransactionService {
     wallet_id: walletId,
     to_wallet_id: toWalletId,
   });
+
+  static updateTransaction = async (id, {
+    walletId,
+    toWalletId,
+    note,
+    amount,
+    currency,
+    type,
+  }) => Transaction.update(
+    {
+      wallet_id: walletId,
+      to_wallet_id: toWalletId,
+      note,
+      amount,
+      currency,
+      type,
+    },
+    {
+      where: { id },
+    },
+  );
 }
 
 export default TransactionService;

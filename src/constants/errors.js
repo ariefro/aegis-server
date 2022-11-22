@@ -28,6 +28,7 @@ const Errors = {
 
   InvalidTypeTransaction: 'Transaction must be either both expense, income, and transfer',
   FailedToCreateTransaction: 'Failed to create a transaction',
+  TransactionNotFound: 'Transaction not found',
 };
 
 export default Errors;

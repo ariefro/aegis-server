@@ -50,5 +50,10 @@ router.get(
   [Middleware.Auth],
   TransactionController.getTransactionsByWalletID,
 );
+router.put(
+  Routes.TransactionId,
+  [validationRules(Services.UpdateTransaction), validate, Middleware.Auth],
+  TransactionController.updateTransaction,
+);
 
 export default router;

@@ -8,6 +8,7 @@ const Services = {
 
   GetDataByID: 'get Data By ID',
   AddTransaction: 'add transaction',
+  UpdateTransaction: 'update transaction',
 };
 
 export default Services;

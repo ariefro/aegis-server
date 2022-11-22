@@ -26,7 +26,7 @@ class TransactionController extends BaseController {
         type, currency, amount, note, wallet_id: walletId, to_wallet_id: toWalletId,
       } = req.body;
 
-      let wallet = await WalletService.getWalletByID(userId, walletId);
+      const wallet = await WalletService.getWalletByID(userId, walletId);
       if (!wallet) {
         throw new Error(Errors.WalletNotFound);
       }
@@ -36,10 +36,8 @@ class TransactionController extends BaseController {
           throw new Error(Errors.DestinationWalletEmpty);
         }
 
-        wallet = await WalletService.getWalletByCurrency(userId, currency, walletId);
-
-        wallet = await WalletService.getWalletByID(userId, toWalletId);
-        if (!wallet) {
+        const destinationWallet = await WalletService.getWalletByID(userId, toWalletId);
+        if (!destinationWallet) {
           throw new Error(Errors.DestinationWalletNotFound);
         }
       }
@@ -64,6 +62,47 @@ class TransactionController extends BaseController {
       });
 
       return res.send(this.reponseSuccess(transaction));
+    } catch (err) {
+      const error = this.getError(err);
+
+      return res.status(error.code).send(error);
+    }
+  };
+
+  static updateTransaction = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.decoded.id;
+      const {
+        type, currency, amount, note, wallet_id: walletId, to_wallet_id: toWalletId,
+      } = req.body;
+
+      const transaction = await TransactionService.getTransactionByID(userId, id);
+      if (!transaction) {
+        throw new Error(Errors.TransactionNotFound);
+      }
+
+      await TransactionService.updateTransaction(id, {
+        walletId,
+        toWalletId,
+        note,
+        amount,
+        currency,
+        type,
+      });
+
+      if (type === constants.Transfer) {
+        if (!toWalletId) {
+          throw new Error(Errors.DestinationWalletEmpty);
+        }
+
+        const destinationWallet = await WalletService.getWalletByID(userId, toWalletId);
+        if (!destinationWallet) {
+          throw new Error(Errors.DestinationWalletNotFound);
+        }
+      }
+
+      return res.send(this.reponseSuccess());
     } catch (err) {
       const error = this.getError(err);
 
