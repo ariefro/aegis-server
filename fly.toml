@@ -9,7 +9,7 @@ processes = []
   NODE_ENV = "stage"
 
 [deploy]
-  release_command = "npx dotenv -e .env sequelize-cli db:migrate --env stage"
+  release_command = "npx sequelize-cli db:migrate --env stage"
 [experimental]
   allowed_public_ports = []
   auto_rollback = true
