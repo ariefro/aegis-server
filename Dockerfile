@@ -7,8 +7,8 @@ RUN npm install
 COPY . .
 
 FROM node:16-alpine
-COPY --from=builder /app /app
 WORKDIR /app
+COPY --from=builder /app /app
 
 EXPOSE 8080
 CMD [ "npm", "start" ]

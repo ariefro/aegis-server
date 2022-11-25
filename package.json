@@ -12,7 +12,8 @@
     "start": "npm run build && node -r dotenv/config ./dist",
     "clean": "rm -rf dist && mkdir dist",
     "build-babel": "babel -d ./dist src -s",
-    "build": "npm run clean && npm run build-babel"
+    "build": "npm run clean && npm run build-babel",
+    "migrateup": "./start.sh"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +27,7 @@
     "@babel/node": "^7.19.1",
     "@babel/preset-env": "^7.19.4",
     "dotenv": "^16.0.3",
+    "dotenv-cli": "^6.0.0",
     "eslint": "^7.32.0 || ^8.2.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",
