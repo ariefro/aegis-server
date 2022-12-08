@@ -67,6 +67,8 @@ class UserController extends BaseController {
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 7,
         path: '/',
+        secure: true,
+        sameSite: 'none',
       });
 
       res.setHeader(constants.SetCookie, serialized);

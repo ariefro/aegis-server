@@ -5,9 +5,19 @@ import api from './routes/apis';
 import { port } from './configs';
 
 const app = express();
+const whitelist = ['http://localhost:3000', 'https://stage-aegis.vercel.app'];
 app.use(cookieParser());
 
-app.use(cors({ origin: '*' }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use('/api', api);
 
