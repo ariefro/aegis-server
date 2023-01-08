@@ -20,15 +20,15 @@ router.post(
   UserController.login,
 );
 router.get(Routes.Users, [Middleware.Auth], UserController.getUsers);
-router.get(Routes.Home, [Middleware.Auth], UserController.home);
 
 router.post(
   Routes.Wallet,
   [validationRules(Services.AddWallet), validate, Middleware.Auth],
   WalletController.addWallet,
 );
+router.get(Routes.WalletID, [Middleware.Auth], WalletController.getDetailOfWallet);
 router.get(Routes.Wallets, [Middleware.Auth], WalletController.getWallets);
-router.get(Routes.WalletId, [Middleware.Auth], WalletController.getWalletByID);
+router.get(Routes.WalletDetail, [Middleware.Auth], WalletController.getWalletByID);
 router.get(Routes.WalletsToTransfer, [Middleware.Auth], WalletController.getWalletsToTransfer);
 router.delete(
   Routes.WalletId,

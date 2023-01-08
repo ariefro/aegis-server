@@ -1,6 +1,5 @@
 import constants from '../constants';
 import Errors from '../constants/errors';
-import TransactionService from '../services/transaction-service';
 import CashFlowService from '../services/cash-flow-service';
 import UserService from '../services/user-service';
 import WalletService from '../services/wallet-service';
@@ -85,33 +84,6 @@ class UserController extends BaseController {
         message: constants.Success,
         wallet: wallets[0],
         token,
-      });
-    } catch (err) {
-      const error = this.getError(err);
-
-      return res.status(error.code).send({ message: error.message });
-    }
-  };
-
-  static home = async (req, res) => {
-    try {
-      const userID = req.decoded.id;
-      const { id } = req.params;
-
-      const wallet = await WalletService.getWalletByID(userID, id);
-      if (!wallet) {
-        throw new Error(Errors.WalletNotFound);
-      }
-
-      const wallets = await WalletService.getOtherWallets(userID, id);
-
-      const transactions = await TransactionService.getTransactions(id);
-      const {
-        id: wallet_id, name, currency, balance,
-      } = wallet.dataValues;
-
-      return res.send({
-        wallet_id, name, currency, balance, wallets, transactions,
       });
     } catch (err) {
       const error = this.getError(err);

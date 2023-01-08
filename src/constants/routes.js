@@ -3,10 +3,10 @@ const Routes = {
   Register: '/register',
   Logout: '/logout',
   Users: '/users',
-  Home: '/home/:id',
 
   Wallet: '/wallet',
-  WalletId: '/wallet/:id',
+  WalletID: '/wallet/:id',
+  WalletDetail: '/wallet-detail/:id',
   Wallets: '/wallets',
   WalletsToTransfer: '/wallets-to-transfer',
 

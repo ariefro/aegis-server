@@ -84,6 +84,33 @@ class WalletController extends BaseController {
     }
   };
 
+  static getDetailOfWallet = async (req, res) => {
+    try {
+      const userID = req.decoded.id;
+      const { id } = req.params;
+
+      const wallet = await WalletService.getWalletByID(userID, id);
+      if (!wallet) {
+        throw new Error(Errors.WalletNotFound);
+      }
+
+      const wallets = await WalletService.getOtherWallets(userID, id);
+
+      const transactions = await TransactionService.getTransactions(id);
+      const {
+        id: wallet_id, name, currency, balance,
+      } = wallet.dataValues;
+
+      return res.send({
+        wallet_id, name, currency, balance, wallets, transactions,
+      });
+    } catch (err) {
+      const error = this.getError(err);
+
+      return res.status(error.code).send({ message: error.message });
+    }
+  };
+
   static deleteWallet = async (req, res) => {
     try {
       const userId = req.decoded.id;
