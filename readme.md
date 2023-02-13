@@ -92,6 +92,12 @@ make migratedown
 
 ### DB Documentation
 
+- Install dbdocs
+
+  ```
+  pnpm install -g dbdocs
+  ```
+
 - Generate DB documentation:
 
   ```
