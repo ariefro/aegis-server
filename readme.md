@@ -84,11 +84,21 @@ make migrateup
 make migratedown
 ```
 
-## API Documentation
+## Documentation
 
-```
-https://documenter.getpostman.com/view/16991559/2s8YekREej
-```
+### API Documentation
+
+- Access the API documentation at [this address](https://documenter.getpostman.com/view/16991559/2s8YekREej).
+
+### DB Documentation
+
+- Generate DB documentation:
+
+  ```
+  make dbdocs
+  ```
+
+- Access the DB documentation at [this address](https://dbdocs.io/ariefromadhon/aegis). Password: `secret`.
 
 ## Development Flow
 

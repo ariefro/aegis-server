@@ -30,5 +30,8 @@ migratedown:
 dev:
 	pnpm dev
 
+dbdocs:
+	dbdocs build src/doc/db.dbml
+
 .PHONY:
 	postgres startcontainer createdb createdbdev dropdb dropdbdev migrateup migratedown dev
