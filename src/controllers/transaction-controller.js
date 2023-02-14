@@ -71,8 +71,8 @@ class TransactionController extends BaseController {
       const message = createNotificationMessage(
         slug,
         amount,
-        wallet,
-        destinationWallet,
+        wallet.dataValues.name,
+        destinationWallet.dataValues.name,
         name,
       );
 
