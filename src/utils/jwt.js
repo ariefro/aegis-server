@@ -1,6 +1,7 @@
 /* eslint-disable no-lone-blocks */
 /* eslint-disable implicit-arrow-linebreak */
 import jwt from 'jsonwebtoken';
+import Errors from '../constants/errors';
 
 class Jwt {
   static OPTIONS = {
@@ -13,11 +14,21 @@ class Jwt {
     algorithm: 'HS256',
   };
 
-  static sign = (payload) =>
-    jwt.sign(payload, process.env.SECRET, this.OPTIONS);
+  static sign = (payload) => {
+    if (!process.env.SECRET) {
+      throw new Error(Errors.MissingSecretKey);
+    }
 
-  static signRefreshToken = (payload) =>
-    jwt.sign(payload, process.env.REFRESH_SECRET, this.REFRESH_OPTIONS);
+    return jwt.sign(payload, process.env.SECRET, this.OPTIONS);
+  };
+
+  static signRefreshToken = (payload) => {
+    if (!process.env.REFRESH_SECRET) {
+      throw new Error(Errors.MissingSecretKey);
+    }
+
+    return jwt.sign(payload, process.env.REFRESH_SECRET, this.REFRESH_OPTIONS);
+  };
 
   static verify = (token) =>
     jwt.verify(token, process.env.SECRET, this.OPTIONS);

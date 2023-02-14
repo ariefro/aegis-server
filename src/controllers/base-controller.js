@@ -26,6 +26,7 @@ class BaseController {
       case Errors.UnableToDeleteWallet:
       case Errors.NotAllowedByCORS:
       case Errors.InvalidTypeTransaction:
+      case Errors.MissingSecretKey:
         return this.reponseFail(err.message, 400);
 
       case Errors.DataNotFound:
