@@ -23,8 +23,9 @@ class WalletController extends BaseController {
     try {
       const userID = req.decoded.id;
       const { id } = req.params;
+      const { query } = req;
 
-      const transactions = await TransactionService.getTransactions(id);
+      const transactions = await TransactionService.getTransactions(id, query);
       const { income, expense } = await
       TransactionService.getTotalTransactionsByType(id, transactions);
 

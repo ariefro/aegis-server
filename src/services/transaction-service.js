@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Op } from 'sequelize';
 import {
-  Income, Expense, Transfer, Payment, DummyDate,
+  Income, Expense, Transfer, DummyDate,
 } from '../constants';
 import { Transaction } from '../models';
 import slugToType from '../utils/slugToType';
@@ -120,7 +120,7 @@ class TransactionService {
     let income = 0;
     let expense = 0;
 
-    transactions.forEach((transaction) => {
+    transactions.rows.forEach((transaction) => {
       const { amount } = transaction.dataValues;
       if (transaction.dataValues.type === Income) {
         income += amount;
