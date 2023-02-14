@@ -1,9 +1,11 @@
 function rupiah(number) {
   const format = new Intl.NumberFormat('id-ID', {
     style: 'currency',
-    maximumSignificantDigits: 2,
+    minimumSignificantDigits: 1,
     currency: 'IDR',
-  }).format(number);
+  })
+    .format(number)
+    .replace(/\s+/, ' ');
 
   return format;
 }
