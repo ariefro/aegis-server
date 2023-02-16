@@ -1,4 +1,5 @@
 import { hashSync } from 'bcrypt';
+import { Op } from 'sequelize';
 import { User } from '../models';
 import UserService from './user-service';
 
@@ -65,6 +66,45 @@ describe('getUserByUsername function', () => {
     expect(result).toHaveProperty('username', 'johndoe');
     expect(User.findOne).toHaveBeenCalledTimes(1);
     expect(User.findOne).toHaveBeenCalledWith({ where: { username: 'johndoe' } });
+  });
+
+  it('should return null if no user found', async () => {
+    jest.spyOn(User, 'findOne').mockResolvedValue(null);
+    const result = await UserService.getUserByUsername({ username: 'dummy' });
+
+    expect(result).toBeNull();
+    expect(User.findOne).toHaveBeenCalledTimes(1);
+    expect(User.findOne).toHaveBeenCalledWith({ where: { username: 'dummy' } });
+  });
+});
+
+describe('getUserByUsernameOrEmail function', () => {
+  afterEach(() => {
+    User.findOne.mockReset();
+  });
+
+  it('should return user with matching username', async () => {
+    jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
+    const result = await UserService.getUserByUsernameOrEmail({ username: 'johndoe' });
+
+    expect(result).toHaveProperty('username', 'johndoe');
+    expect(User.findOne).toHaveBeenCalledTimes(1);
+    expect(User.findOne).toHaveBeenCalledWith({ where: { [Op.or]: [{ username: 'johndoe' }, { email: undefined }] } });
+  });
+
+  it('should return user with matching email', async () => {
+    const mockUsers = {
+      username: 'johndoe',
+      password: hashSync('password', 10),
+      email: 'johndoe@example.com',
+    };
+
+    jest.spyOn(User, 'findOne').mockResolvedValue(mockUsers);
+    const result = await UserService.getUserByUsernameOrEmail({ email: 'johndoe@example.com' });
+
+    expect(result).toHaveProperty('email', 'johndoe@example.com');
+    expect(User.findOne).toHaveBeenCalledTimes(1);
+    expect(User.findOne).toHaveBeenCalledWith({ where: { [Op.or]: [{ username: undefined }, { email: 'johndoe@example.com' }] } });
   });
 
   it('should return null if no user found', async () => {
