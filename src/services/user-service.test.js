@@ -1,6 +1,7 @@
 import { compareSync, hashSync } from 'bcrypt';
 import { Op } from 'sequelize';
 import { User } from '../models';
+import Jwt from '../utils/jwt';
 import UserService from './user-service';
 
 const mockUser = {
@@ -183,5 +184,25 @@ describe('tokenVersionChecker', () => {
 
   it('should return token version not valid', async () => {
     await expect(UserService.tokenVersionChecker(mockUser, 1)).rejects.toThrow('Token version not valid');
+  });
+});
+
+describe('generateAccessToken function', () => {
+  const jwtSignSpy = jest.spyOn(Jwt, 'sign').mockResolvedValue('example-token');
+  it('should generate an access token', async () => {
+    const token = await UserService.generateAccessToken(mockUser);
+
+    expect(token).toBe('example-token');
+    expect(jwtSignSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('generateRefreshToken function', () => {
+  const jwtSignRefreshTokenSpy = jest.spyOn(Jwt, 'signRefreshToken').mockResolvedValue('refresh-token');
+  it('should generate a refresh token', async () => {
+    const token = await UserService.generateRefreshToken(mockUser);
+
+    expect(token).toBe('refresh-token');
+    expect(jwtSignRefreshTokenSpy).toHaveBeenCalledTimes(1);
   });
 });
