@@ -206,3 +206,22 @@ describe('generateRefreshToken function', () => {
     expect(jwtSignRefreshTokenSpy).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('updateToken', () => {
+  it('should update refresh token for a given user', async () => {
+    const newRefreshToken = 'new_refresh_token';
+    const updatedMockUser = {
+      id: 'ae2cff11-9661-48e8-a51e-5b19b8b90633',
+      username: 'johndoe',
+      password: hashSync('password', 10),
+      email: 'johndoe@example.com',
+      token_version: 0,
+      refresh_token: 'new_refresh_token',
+    };
+
+    jest.spyOn(UserService, 'updateToken').mockResolvedValue(updatedMockUser);
+    const result = await UserService.updateToken(mockUser.username, newRefreshToken);
+
+    expect(result.refresh_token).toEqual(updatedMockUser.refresh_token);
+  });
+});
