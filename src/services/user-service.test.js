@@ -225,3 +225,22 @@ describe('updateToken', () => {
     expect(result.refresh_token).toEqual(updatedMockUser.refresh_token);
   });
 });
+
+describe('updateTokenVersion', () => {
+  it('should update token version for a given user', async () => {
+    const newTokenVersion = 1;
+    const updatedMockUser = {
+      id: 'ae2cff11-9661-48e8-a51e-5b19b8b90633',
+      username: 'johndoe',
+      password: hashSync('password', 10),
+      email: 'johndoe@example.com',
+      token_version: 1,
+      refresh_token: 'new_refresh_token',
+    };
+
+    jest.spyOn(UserService, 'updateTokenVersion').mockResolvedValue(updatedMockUser);
+    const result = await UserService.updateTokenVersion(mockUser.username, newTokenVersion);
+
+    expect(result.token_version).toEqual(updatedMockUser.token_version);
+  });
+});
