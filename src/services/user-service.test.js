@@ -134,3 +134,34 @@ describe('registerUser function', () => {
     expect(User.create).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('loginUser function', () => {
+  const password = 'password';
+  const invalidPassword = 'invalid-password';
+  const user = {
+    username: 'johndoe',
+    password: hashSync(password, 10),
+    email: 'johndoe@example.com',
+  };
+
+  beforeAll(() => {
+    jest.spyOn(UserService, 'generateAccessToken').mockResolvedValue('access-token');
+  });
+
+  it('returns an access token if user credentials are valid', async () => {
+    const token = await UserService.loginUser({ user, password });
+    expect(token).toBe('access-token');
+  });
+
+  it('throws an error if the user is invalid', async () => {
+    await expect(UserService.loginUser({ user: null, password })).rejects.toThrow('Username or password is incorrect');
+  });
+
+  it('throws an error if the password is invalid', async () => {
+    await expect(UserService.loginUser({ user, password: invalidPassword })).rejects.toThrow('Username or password is incorrect');
+  });
+
+  afterAll(() => {
+    UserService.generateAccessToken.mockRestore();
+  });
+});
