@@ -165,3 +165,23 @@ describe('loginUser function', () => {
     UserService.generateAccessToken.mockRestore();
   });
 });
+
+describe('tokenVersionChecker', () => {
+  beforeAll(() => {
+    jest.spyOn(UserService, 'generateAccessToken').mockResolvedValue('access-token');
+  });
+
+  afterAll(() => {
+    UserService.generateAccessToken.mockReset();
+  });
+
+  it('should generate an access token', async () => {
+    const token = await UserService.tokenVersionChecker(mockUser, 0);
+
+    expect(token).toBe('access-token');
+  });
+
+  it('should return token version not valid', async () => {
+    await expect(UserService.tokenVersionChecker(mockUser, 1)).rejects.toThrow('Token version not valid');
+  });
+});
