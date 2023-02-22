@@ -1,4 +1,4 @@
-import { hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 import { Op } from 'sequelize';
 import { User } from '../models';
 import UserService from './user-service';
@@ -114,5 +114,23 @@ describe('getUserByUsernameOrEmail function', () => {
     expect(result).toBeNull();
     expect(User.findOne).toHaveBeenCalledTimes(1);
     expect(User.findOne).toHaveBeenCalledWith({ where: { username: 'dummy' } });
+  });
+});
+
+describe('registerUser function', () => {
+  afterEach(() => {
+    User.create.mockReset();
+  });
+
+  it('should create a new user', async () => {
+    const password = 'password';
+
+    jest.spyOn(User, 'create').mockResolvedValue(mockUser);
+    const result = await UserService.registerUser(mockUser);
+
+    expect(result.username).toEqual('johndoe');
+    expect(result.email).toEqual('johndoe@example.com');
+    expect(compareSync(password, result.password)).toBe(true);
+    expect(User.create).toHaveBeenCalledTimes(1);
   });
 });
