@@ -1,31 +1,25 @@
-import { Wallet } from '../models';
+import { Op } from 'sequelize';
+import { Wallet, CashFlow } from '../models';
 import WalletService from './wallet-service';
 
-describe('get wallets function', () => {
+const userId = 'ae2cff11-9661-48e8-a51e-5b19b8b90633';
+
+describe('Get Wallets', () => {
   afterEach(() => {
     Wallet.findAll.mockReset();
   });
 
   it("should return all of the user's wallet accounts", async () => {
-    const userId = 'ae2cff11-9661-48e8-a51e-5b19b8b90633';
-
-    const mockWallets = [
+    const expectedResult = [
       {
-        user_id: userId,
+        id: '3b1b22e7-65e6-4106-b5a4-81a09430ae4d',
         name: 'cash 1',
         status: 'active',
         currency: 'IDR',
         balance: 10000,
       },
       {
-        user_id: 'c4e541ad-56aa-4a40-8778-1c0c216b4a3d',
-        name: 'cash 2',
-        status: 'active',
-        currency: 'IDR',
-        balance: 2000,
-      },
-      {
-        user_id: userId,
+        id: '9f2f2193-53c4-4c50-a1b4-e47a916981fa',
         name: 'cash 3',
         status: 'active',
         currency: 'IDR',
@@ -35,7 +29,7 @@ describe('get wallets function', () => {
 
     const spyGetWallets = jest
       .spyOn(Wallet, 'findAll')
-      .mockResolvedValue([mockWallets[0], mockWallets[2]]);
+      .mockResolvedValue(expectedResult);
 
     const result = await WalletService.getWallets(userId);
 
@@ -45,26 +39,10 @@ describe('get wallets function', () => {
       where: { user_id: userId },
       attributes: { exclude: ['cash_flow_id', 'user_id'] },
     });
-    expect(result).toEqual([
-      {
-        user_id: userId,
-        name: 'cash 1',
-        status: 'active',
-        currency: 'IDR',
-        balance: 10000,
-      },
-      {
-        user_id: userId,
-        name: 'cash 3',
-        status: 'active',
-        currency: 'IDR',
-        balance: 9000,
-      },
-    ]);
+    expect(result).toEqual(expectedResult);
   });
 
   it('should return an empty array if no wallets found for a given user id', async () => {
-    const userId = 'ae2cff11-9661-48e8-a51e-5b19b8b90633';
     const spyGetWallets = jest.spyOn(Wallet, 'findAll').mockResolvedValue([]);
 
     const result = await WalletService.getWallets(userId);
@@ -77,5 +55,80 @@ describe('get wallets function', () => {
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBe(0);
     expect(result).toEqual([]);
+  });
+});
+
+describe('Get Wallet By ID', () => {
+  afterEach(() => {
+    Wallet.findOne.mockReset();
+  });
+
+  const expectedResult = {
+    id: 'b426a3df-d5e4-4aab-bdb5-7f234a4a2ee8',
+    name: 'cash',
+    status: 'active',
+    currency: 'IDR',
+    balance: 10000,
+    total: {
+      income: 12000,
+      expense: 6000,
+    },
+  };
+
+  it('should return a wallet account with a user ID and wallet ID that match.', async () => {
+    const spyGetWalletById = jest
+      .spyOn(Wallet, 'findOne')
+      .mockResolvedValue(expectedResult);
+
+    const result = await WalletService.getWalletByID(
+      userId,
+      'b426a3df-d5e4-4aab-bdb5-7f234a4a2ee8',
+    );
+
+    expect(spyGetWalletById).toHaveBeenCalledTimes(1);
+    expect(Wallet.findOne).toHaveBeenCalledWith({
+      where: {
+        user_id: userId,
+        [Op.and]: { id: 'b426a3df-d5e4-4aab-bdb5-7f234a4a2ee8' },
+      },
+      attributes: { exclude: ['user_id'] },
+      include: [
+        {
+          model: CashFlow,
+          as: 'total',
+          attributes: ['income', 'expense'],
+        },
+      ],
+    });
+    expect(typeof result).toBe('object');
+    expect(result).toEqual(expectedResult);
+  });
+
+  it("should return null if no wallet's found", async () => {
+    const spyGetWalletById = jest
+      .spyOn(Wallet, 'findOne')
+      .mockResolvedValue(null);
+
+    const result = await WalletService.getWalletByID(
+      userId,
+      'b426a3df-d5e4-4aab-bdb5-7f234a4a2ee9',
+    );
+
+    expect(spyGetWalletById).toHaveBeenCalledTimes(1);
+    expect(Wallet.findOne).toHaveBeenCalledWith({
+      where: {
+        user_id: userId,
+        [Op.and]: { id: 'b426a3df-d5e4-4aab-bdb5-7f234a4a2ee9' },
+      },
+      attributes: { exclude: ['user_id'] },
+      include: [
+        {
+          model: CashFlow,
+          as: 'total',
+          attributes: ['income', 'expense'],
+        },
+      ],
+    });
+    expect(result).toBeNull();
   });
 });
