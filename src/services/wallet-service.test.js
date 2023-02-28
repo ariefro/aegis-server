@@ -3,8 +3,9 @@ import { Wallet, CashFlow } from '../models';
 import WalletService from './wallet-service';
 
 const userId = 'ae2cff11-9661-48e8-a51e-5b19b8b90633';
+const walletId = '56568ac0-19c0-4186-b66d-adf2098c8083';
 
-describe('Get Wallets', () => {
+describe('getWallets function', () => {
   afterEach(() => {
     Wallet.findAll.mockReset();
   });
@@ -58,17 +59,17 @@ describe('Get Wallets', () => {
   });
 });
 
-describe('Get Wallet By ID', () => {
+describe('getWalletByID function', () => {
   afterEach(() => {
     Wallet.findOne.mockReset();
   });
 
   const expectedResult = {
-    id: 'b426a3df-d5e4-4aab-bdb5-7f234a4a2ee8',
-    name: 'cash',
+    id: walletId,
+    name: 'cash 2',
     status: 'active',
     currency: 'IDR',
-    balance: 10000,
+    balance: 25000,
     total: {
       income: 12000,
       expense: 6000,
@@ -82,14 +83,14 @@ describe('Get Wallet By ID', () => {
 
     const result = await WalletService.getWalletByID(
       userId,
-      'b426a3df-d5e4-4aab-bdb5-7f234a4a2ee8',
+      walletId,
     );
 
     expect(spyGetWalletById).toHaveBeenCalledTimes(1);
     expect(Wallet.findOne).toHaveBeenCalledWith({
       where: {
         user_id: userId,
-        [Op.and]: { id: 'b426a3df-d5e4-4aab-bdb5-7f234a4a2ee8' },
+        [Op.and]: { id: walletId },
       },
       attributes: { exclude: ['user_id'] },
       include: [
@@ -130,5 +131,74 @@ describe('Get Wallet By ID', () => {
       ],
     });
     expect(result).toBeNull();
+  });
+});
+
+describe('getOtherWallets function', () => {
+  afterEach(() => {
+    Wallet.findAll.mockReset();
+  });
+
+  it('should return an array of wallets excluding the specified wallet', async () => {
+    const expectedResult = [
+      {
+        id: '3b1b22e7-65e6-4106-b5a4-81a09430ae4d',
+        name: 'cash 1',
+        status: 'active',
+      },
+      {
+        id: '9f2f2193-53c4-4c50-a1b4-e47a916981fa',
+        name: 'cash 3',
+        status: 'active',
+      },
+    ];
+
+    const spyGetOtherWallets = jest
+      .spyOn(Wallet, 'findAll')
+      .mockResolvedValue(expectedResult);
+
+    const otherWallets = await WalletService.getOtherWallets(userId, walletId);
+
+    expect(spyGetOtherWallets).toHaveBeenCalledTimes(1);
+    expect(otherWallets).toHaveLength(2);
+    expect(otherWallets[0]).toMatchObject({
+      id: '3b1b22e7-65e6-4106-b5a4-81a09430ae4d',
+      name: 'cash 1',
+      status: 'active',
+    });
+    expect(otherWallets[1]).toMatchObject({
+      id: '9f2f2193-53c4-4c50-a1b4-e47a916981fa',
+      name: 'cash 3',
+      status: 'active',
+    });
+    expect(Wallet.findAll).toHaveBeenCalledWith({
+      where: {
+        user_id: userId,
+        id: {
+          [Op.not]: walletId,
+        },
+      },
+      attributes: { exclude: ['user_id', 'balance', 'currency', 'created_at'] },
+    });
+  });
+
+  it('should return an empty array if no other wallets are found', async () => {
+    const spyGetOtherWallets = jest.spyOn(Wallet, 'findAll').mockResolvedValue([]);
+
+    const result = await WalletService.getOtherWallets(userId, walletId);
+
+    expect(spyGetOtherWallets).toHaveBeenCalledTimes(1);
+    expect(Wallet.findAll).toHaveBeenCalledWith({
+      where: {
+        user_id: userId,
+        id: {
+          [Op.not]: walletId,
+        },
+      },
+      attributes: { exclude: ['user_id', 'balance', 'currency', 'created_at'] },
+    });
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBe(0);
+    expect(result).toEqual([]);
   });
 });
