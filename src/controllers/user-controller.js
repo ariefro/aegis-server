@@ -93,6 +93,8 @@ class UserController extends BaseController {
         .cookie('refresh_token', refreshToken, {
           maxAges: 1000 * 60 * 60 * 24,
           httpOnly: true,
+          sameSite: 'none',
+          secure: true,
         })
         .send({
           message: constants.Success,
