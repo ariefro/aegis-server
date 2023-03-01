@@ -7,6 +7,8 @@ import WalletController from '../../controllers/wallet-controller';
 import TransactionController from '../../controllers/transaction-controller';
 import LogController from '../../controllers/log-controller';
 
+require('pg');
+
 const router = express.Router();
 const {
   validate,
