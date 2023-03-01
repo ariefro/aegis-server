@@ -10,7 +10,7 @@ const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 const config = configs[env];
 
 let sequelize;
-if (env === 'stage') {
+if (env === 'stage' || env === 'production') {
   sequelize = new Sequelize(config.url, config);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
