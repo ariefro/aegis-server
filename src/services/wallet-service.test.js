@@ -202,3 +202,43 @@ describe('getOtherWallets function', () => {
     expect(result).toEqual([]);
   });
 });
+
+describe('addWallet function', () => {
+  afterEach(() => {
+    Wallet.create.mockReset();
+  });
+
+  it('should create a new wallet', async () => {
+    const addWalletRequest = {
+      name: 'My Wallet',
+      balance: 0,
+      currency: 'IDR',
+      userID: userId,
+      cashFlowID: '1731c479-e5a6-4dd2-a50a-02778275b760',
+    };
+
+    const expectedResult = {
+      id: '75f481e0-7a34-4c1f-a519-860f05d2592a',
+      user_id: userId,
+      cash_flow_id: '1731c479-e5a6-4dd2-a50a-02778275b760',
+      name: 'My Wallet',
+      currency: 'IDR',
+      balance: 0,
+      status: 'active',
+    };
+
+    const spyAddWallet = jest.spyOn(Wallet, 'create').mockResolvedValue(expectedResult);
+    const result = await WalletService.addWallet(addWalletRequest);
+
+    expect(spyAddWallet).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({
+      name: addWalletRequest.name,
+      balance: addWalletRequest.balance,
+      currency: addWalletRequest.currency,
+      user_id: addWalletRequest.userID,
+      cash_flow_id: addWalletRequest.cashFlowID,
+    });
+    expect(typeof result).toBe('object');
+    expect(result).toEqual(expectedResult);
+  });
+});
