@@ -1,4 +1,4 @@
-# Aegis.
+# Aegis
 
 ## Description
 
@@ -32,8 +32,9 @@ Now you can start to install the dependencies, this project is pinned with [Volt
 $ pnpm install
 ```
 
-### Dependencies
+### Requirements
 
+- [Node.js](https://nodejs.org/en/)
 - [Docker](https://www.docker.com/products/docker-desktop/)
 - [make](https://linuxhint.com/install-make-ubuntu/)
 
@@ -51,27 +52,15 @@ $ pnpm install
 | CONTAINER_NAME | Docker Container Name       |
 | DOCKER_IMAGE   | Docker Image Postgres       |
 
-### Setup infrastructure
+### Run the development server:
 
-- Install all dependencies
-
-```
-pnpm install
-```
-
-- Create postgres container:
+- Run server
 
 ```
-make postgres
+make dev
 ```
 
-- Start postgres container:
-
-```
-make startcontainer
-```
-
-- Create database:
+- Created db
 
 ```
 make createdb
@@ -95,13 +84,27 @@ make migrateup
 make migratedown
 ```
 
-### Run the development server:
+## Documentation
 
-- Run server:
+### API Documentation
 
-```
-make start
-```
+- Access the API documentation at [this address](https://documenter.getpostman.com/view/16991559/2s8YekREej).
+
+### DB Documentation
+
+- Install dbdocs
+
+  ```
+  pnpm install -g dbdocs
+  ```
+
+- Generate DB documentation:
+
+  ```
+  make dbdocs
+  ```
+
+- Access the DB documentation at [this address](https://dbdocs.io/ariefromadhon/aegis). Password: `secret`.
 
 ## Development Flow
 

@@ -9,19 +9,29 @@ postgres:
 startcontainer:
 	docker start ${CONTAINER_NAME}
 
-createdb:
+createdbdev:
 	docker exec -it ${CONTAINER_NAME} createdb --username=${DB_USERNAME} --owner=${DB_USERNAME} ${DB_DATABASE}
 
-dropdb:
+dropdbdev:
 	docker exec -it ${CONTAINER_NAME} dropdb ${DB_DATABASE} -U ${DB_USERNAME}
 
+createdb:
+	pnpm sequelize db:create
+
+dropdb:
+	pnpm sequelize db:drop
+
 migrateup:
-	npx sequelize-cli db:migrate
+	pnpm sequelize-cli db:migrate
 
 migratedown:
-	npx sequelize-cli db:migrate:undo
+	pnpm sequelize-cli db:migrate:undo
 
-start:
-	pnpm start
+dev:
+	pnpm dev
 
-.PHONY: postgres startcontainer createdb dropdb migrateup migratedown start
+dbdocs:
+	dbdocs build src/doc/db.dbml
+
+.PHONY:
+	postgres startcontainer createdb createdbdev dropdb dropdbdev migrateup migratedown dev

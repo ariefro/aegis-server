@@ -1,0 +1,32 @@
+name: Deploy to stage
+
+on:
+  push:
+    branches: ['dev']
+
+jobs:
+  build:
+    name: Deploy app
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create env file
+        run: |
+          touch .env
+          echo APP_PORT=${{ secrets.APP_PORT }} >> .env
+          echo FE_LOCAL_HOST=${{ secrets.FE_LOCAL_HOST }} >> .env
+          echo FE_STAGING_HOST=${{ secrets.FE_STAGING_HOST }} >> .env
+          echo SECRET=${{ secrets.JWT_SECRET_KEY }} >> .env
+          echo REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET_KEY }} >> .env
+          echo DB_URL=${{ secrets.DB_URL }} >> .env
+          cat .env
+
+      - name: Setup Fly
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
