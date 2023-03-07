@@ -22,8 +22,9 @@ class BaseController {
       case Errors.FailedToRegister:
       case Errors.FailedToCreateCashFlow:
       case Errors.FailedToCreateWallet:
-      case Errors.UserAlreadyExist:
+      case Errors.UnableToAddWallet:
       case Errors.UnableToDeleteWallet:
+      case Errors.UserAlreadyExist:
       case Errors.NotAllowedByCORS:
       case Errors.InvalidTypeTransaction:
       case Errors.MissingSecretKey:

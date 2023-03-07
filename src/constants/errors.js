@@ -24,6 +24,7 @@ const Errors = {
   NameOnlyLetters: 'Name contains only letters',
   NameAlreadyExists: 'Name already exists',
   BalanceEmpty: 'Balance cannot be empty',
+  UnableToAddWallet: 'Cannot add more wallet',
   WalletNotFound: 'Wallet not found',
   DestinationWalletEmpty: 'Destination transfer cannot be empty',
   DestinationWalletNotFound: 'Destination transfer not found',
@@ -31,7 +32,7 @@ const Errors = {
   FailedToCreateWallet: 'Failed to create a wallet',
 
   InvalidTypeTransaction:
-    'Transaction must be either both expense, payment, income, and transfer',
+    'Transaction must be either both payout, payment, top up, and transfer',
   FailedToCreateTransaction: 'Failed to create a transaction',
   TransactionNotFound: 'Transaction not found',
   NameTransactionEmpty: 'Name of transaction cannot be empty',
