@@ -60,7 +60,7 @@ class UserController extends BaseController {
         throw new Error(Errors.FailedToCreateWallet);
       }
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 

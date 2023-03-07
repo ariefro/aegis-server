@@ -149,7 +149,7 @@ class WalletController extends BaseController {
 
       await WalletService.deleteWallet(wallet);
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 
@@ -177,7 +177,7 @@ class WalletController extends BaseController {
         currency,
       });
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 

@@ -80,7 +80,7 @@ class TransactionController extends BaseController {
 
       await LogService.createLog(userID, slug, type, message);
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 
@@ -121,7 +121,7 @@ class TransactionController extends BaseController {
         }
       }
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 
@@ -154,7 +154,7 @@ class TransactionController extends BaseController {
 
       await TransactionService.deleteTransaction(transaction);
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 

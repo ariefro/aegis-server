@@ -28,7 +28,7 @@ class BaseController {
       case Errors.NotAllowedByCORS:
       case Errors.InvalidTypeTransaction:
       case Errors.MissingSecretKey:
-        return this.reponseFail(err.message, 400);
+        return this.responseFail(err.message, 400);
 
       case Errors.DataNotFound:
       case Errors.EmailNotFound:
@@ -36,14 +36,14 @@ class BaseController {
       case Errors.TransactionNotFound:
       case Errors.UserNotFound:
       case Errors.WalletNotFound:
-        return this.reponseFail(err.message, 404);
+        return this.responseFail(err.message, 404);
 
       default:
-        return this.reponseFail(Errors.InternalServerError);
+        return this.responseFail(Errors.InternalServerError);
     }
   };
 
-  static reponseSuccess = (message = null) => {
+  static responseSuccess = (message = null) => {
     const response = {
       message: constants.Success,
     };
@@ -55,7 +55,7 @@ class BaseController {
     return response;
   };
 
-  static reponseFail = (message, code) => {
+  static responseFail = (message, code) => {
     const response = {
       message: '',
       code: 500,
