@@ -18,7 +18,7 @@ module.exports = {
       },
       slug: {
         allowNull: false,
-        type: Sequelize.ENUM('expense', 'income', 'transfer', 'payment'),
+        type: Sequelize.ENUM('payout', 'top up', 'transfer', 'payment'),
       },
       type: {
         type: Sequelize.ENUM('expense', 'income', 'transfer'),

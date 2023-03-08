@@ -1,14 +1,14 @@
 import slugToType from './slugToType';
 
 describe('transform slug to type', () => {
-  it('should return expense when slug is expense', () => {
-    const result = slugToType('expense');
+  it('should return expense when slug is payout', () => {
+    const result = slugToType('payout');
 
     expect(result).toBe('expense');
   });
 
-  it('should return income when slug is income', () => {
-    const result = slugToType('income');
+  it('should return income when slug is top up', () => {
+    const result = slugToType('top up');
 
     expect(result).toBe('income');
   });

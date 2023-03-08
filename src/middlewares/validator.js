@@ -45,8 +45,8 @@ const validationRules = (service) => {
     case Services.AddTransaction: {
       return [
         body(constants.TypeTransaction, Errors.InvalidTypeTransaction).isIn([
-          'expense',
-          'income',
+          'payout',
+          'top up',
           'transfer',
           'payment',
         ]),
@@ -58,8 +58,8 @@ const validationRules = (service) => {
     case Services.UpdateTransaction: {
       return [
         body(constants.TypeTransaction, Errors.InvalidTypeTransaction).isIn([
-          'expense',
-          'income',
+          'payout',
+          'top up',
           'transfer',
           'payment',
         ]),

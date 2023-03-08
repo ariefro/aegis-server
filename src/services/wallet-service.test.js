@@ -38,7 +38,7 @@ describe('getWallets function', () => {
     expect(Array.isArray(result)).toBe(true);
     expect(Wallet.findAll).toHaveBeenCalledWith({
       where: { user_id: userId },
-      attributes: { exclude: ['cash_flow_id', 'user_id'] },
+      attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at'] },
     });
     expect(result).toEqual(expectedResult);
   });
@@ -51,7 +51,7 @@ describe('getWallets function', () => {
     expect(spyGetWallets).toHaveBeenCalledTimes(1);
     expect(Wallet.findAll).toHaveBeenCalledWith({
       where: { user_id: userId },
-      attributes: { exclude: ['cash_flow_id', 'user_id'] },
+      attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at'] },
     });
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBe(0);

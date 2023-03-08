@@ -1,4 +1,4 @@
-import { Income, Transfer } from '../constants';
+import { TopUp, Transfer } from '../constants';
 import rupiah from './formatRupiah';
 
 function createNotificationMessage(
@@ -11,7 +11,7 @@ function createNotificationMessage(
   const formatRupiah = rupiah(amount);
 
   let message;
-  if (slug === Income) {
+  if (slug === TopUp) {
     message = `You have received ${formatRupiah} from ${nameOfTransaction}`;
   } else if (slug === Transfer) {
     message = `You have transfered ${formatRupiah} from ${nameOfSourceWallet} to ${nameOfDestinationWallet} for ${nameOfTransaction}`;

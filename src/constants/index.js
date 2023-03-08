@@ -18,4 +18,5 @@ module.exports = {
   Income: 'income',
   Expense: 'expense',
   Payment: 'payment',
+  TopUp: 'top up',
 };

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Op } from 'sequelize';
 import {
-  Income, Expense, Transfer, DummyDate,
+  Income, Expense, Transfer, DummyDate, TopUp,
 } from '../constants';
 import { Transaction } from '../models';
 import slugToType from '../utils/slugToType';
@@ -51,7 +51,9 @@ class TransactionService {
     });
 
     rows.forEach((transaction) => {
-      if (transaction.dataValues.slug !== Income) {
+      if (transaction.dataValues.slug === Transfer && transaction.dataValues.to_wallet_id === id) {
+        transaction.dataValues.amount *= 1;
+      } else if (transaction.dataValues.slug !== TopUp) {
         transaction.dataValues.amount *= -1;
       }
     });
@@ -134,6 +136,8 @@ class TransactionService {
         }
       }
     });
+
+    console.log({ income, expense });
 
     return { income, expense };
   };

@@ -8,7 +8,7 @@ class WalletService {
     where: {
       user_id: id,
     },
-    attributes: { exclude: ['cash_flow_id', 'user_id'] },
+    attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at'] },
   });
 
   static getWalletByID = async (userId, id) => Wallet.findOne({

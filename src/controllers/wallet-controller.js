@@ -1,3 +1,4 @@
+import { Success } from '../constants';
 import Errors from '../constants/errors';
 import CashFlowService from '../services/cash-flow-service';
 import TransactionService from '../services/transaction-service';
@@ -69,9 +70,14 @@ class WalletController extends BaseController {
       const { name, balance, currency } = req.body;
       const { id: userID } = req.decoded;
 
+      const wallets = await WalletService.getWallets(userID);
+      if (wallets.length === 6) {
+        throw new Error(Errors.UnableToAddWallet);
+      }
+
       const cashFlow = await CashFlowService.addCashFlow();
       const cashFlowID = cashFlow.dataValues.id;
-      await WalletService.addWallet({
+      const wallet = await WalletService.addWallet({
         name,
         balance,
         currency,
@@ -79,7 +85,10 @@ class WalletController extends BaseController {
         cashFlowID,
       });
 
-      return res.send(this.reponseSuccess());
+      return res.send({
+        message: Success,
+        wallet_id: wallet.id,
+      });
     } catch (err) {
       const error = this.getError(err);
 
@@ -98,7 +107,7 @@ class WalletController extends BaseController {
         throw new Error(Errors.WalletNotFound);
       }
 
-      const wallets = await WalletService.getOtherWallets(userID, id);
+      const wallets = await WalletService.getWallets(userID, id);
 
       const { rows: transactions, count: total_of_transaction } = await
       TransactionService.getTransactions(id, query);
@@ -129,7 +138,7 @@ class WalletController extends BaseController {
       const userId = req.decoded.id;
       const { id } = req.params;
 
-      const wallets = await WalletService.getWallets(userId);
+      let wallets = await WalletService.getWallets(userId);
       if (wallets.length <= 1) {
         throw new Error(Errors.UnableToDeleteWallet);
       }
@@ -141,7 +150,9 @@ class WalletController extends BaseController {
 
       await WalletService.deleteWallet(wallet);
 
-      return res.send(this.reponseSuccess());
+      wallets = await WalletService.getWallets(userId);
+
+      return res.send({ message: Success, wallets });
     } catch (err) {
       const error = this.getError(err);
 
@@ -169,7 +180,7 @@ class WalletController extends BaseController {
         currency,
       });
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 

@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       slug: {
         allowNull: false,
-        type: DataTypes.ENUM('expense', 'income', 'transfer', 'payment'),
+        type: DataTypes.ENUM('payout', 'top up', 'transfer', 'payment'),
       },
       message: {
         allowNull: false,

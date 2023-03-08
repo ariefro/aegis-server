@@ -1,11 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 import api from './routes/apis';
 import { port } from './configs';
 import Errors from './constants/errors';
 
 const app = express();
+
+app.use(morgan('common'));
+
 const whitelist = ['http://localhost:3000', 'https://stage-aegis.vercel.app'];
 app.use(cookieParser());
 

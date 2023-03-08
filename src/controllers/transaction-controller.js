@@ -68,19 +68,30 @@ class TransactionController extends BaseController {
         slug,
       });
 
-      const message = createNotificationMessage(
-        slug,
-        amount,
-        wallet.dataValues.name,
-        destinationWallet.dataValues.name,
-        name,
-      );
+      let message;
+      if (destinationWallet !== undefined) {
+        message = createNotificationMessage(
+          slug,
+          amount,
+          wallet.dataValues.name,
+          destinationWallet.dataValues.name,
+          name,
+        );
+      } else {
+        message = createNotificationMessage(
+          slug,
+          amount,
+          wallet.dataValues.name,
+          undefined,
+          name,
+        );
+      }
 
       const type = slugToType(slug);
 
       await LogService.createLog(userID, slug, type, message);
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 
@@ -121,7 +132,7 @@ class TransactionController extends BaseController {
         }
       }
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 
@@ -154,7 +165,7 @@ class TransactionController extends BaseController {
 
       await TransactionService.deleteTransaction(transaction);
 
-      return res.send(this.reponseSuccess());
+      return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
 
