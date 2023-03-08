@@ -68,13 +68,24 @@ class TransactionController extends BaseController {
         slug,
       });
 
-      const message = createNotificationMessage(
-        slug,
-        amount,
-        wallet.dataValues.name,
-        destinationWallet.dataValues.name,
-        name,
-      );
+      let message;
+      if (destinationWallet !== undefined) {
+        message = createNotificationMessage(
+          slug,
+          amount,
+          wallet.dataValues.name,
+          destinationWallet.dataValues.name,
+          name,
+        );
+      } else {
+        message = createNotificationMessage(
+          slug,
+          amount,
+          wallet.dataValues.name,
+          undefined,
+          name,
+        );
+      }
 
       const type = slugToType(slug);
 
