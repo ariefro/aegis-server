@@ -1,3 +1,4 @@
+import { Success } from '../constants';
 import Errors from '../constants/errors';
 import CashFlowService from '../services/cash-flow-service';
 import TransactionService from '../services/transaction-service';
@@ -85,7 +86,7 @@ class WalletController extends BaseController {
       });
 
       return res.send({
-        message: 'success',
+        message: Success,
         wallet_id: wallet.id,
       });
     } catch (err) {
@@ -137,7 +138,7 @@ class WalletController extends BaseController {
       const userId = req.decoded.id;
       const { id } = req.params;
 
-      const wallets = await WalletService.getWallets(userId);
+      let wallets = await WalletService.getWallets(userId);
       if (wallets.length <= 1) {
         throw new Error(Errors.UnableToDeleteWallet);
       }
@@ -149,7 +150,9 @@ class WalletController extends BaseController {
 
       await WalletService.deleteWallet(wallet);
 
-      return res.send(this.responseSuccess());
+      wallets = await WalletService.getWallets(userId);
+
+      return res.send({ message: Success, wallets });
     } catch (err) {
       const error = this.getError(err);
 
