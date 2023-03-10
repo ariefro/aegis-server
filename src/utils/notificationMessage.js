@@ -5,7 +5,7 @@ function createNotificationMessage(
   slug,
   amount,
   nameOfSourceWallet,
-  nameOfDestinationWallet,
+  nameOfDestinationTransfer,
   nameOfTransaction,
 ) {
   const formatRupiah = rupiah(amount);
@@ -14,7 +14,7 @@ function createNotificationMessage(
   if (slug === TopUp) {
     message = `You have received ${formatRupiah} from ${nameOfTransaction}`;
   } else if (slug === Transfer) {
-    message = `You have transfered ${formatRupiah} from ${nameOfSourceWallet} to ${nameOfDestinationWallet} for ${nameOfTransaction}`;
+    message = `You have transfered ${formatRupiah} from ${nameOfSourceWallet} to ${nameOfDestinationTransfer} for ${nameOfTransaction}`;
   } else {
     message = `You have spent ${formatRupiah} for ${nameOfTransaction}`;
   }

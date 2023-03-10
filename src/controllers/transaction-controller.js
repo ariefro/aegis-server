@@ -37,15 +37,11 @@ class TransactionController extends BaseController {
         throw new Error(Errors.WalletNotFound);
       }
 
-      let destinationWallet;
+      let destinationTransfer;
       if (slug === Transfer) {
-        if (!toWalletID) {
-          throw new Error(Errors.DestinationWalletEmpty);
-        }
-
-        destinationWallet = await WalletService.getWalletByID(userID, toWalletID);
-        if (!destinationWallet) {
-          throw new Error(Errors.DestinationWalletNotFound);
+        destinationTransfer = await WalletService.getWalletByID(userID, toWalletID);
+        if (!destinationTransfer) {
+          throw new Error(Errors.DestinationTransferNotFound);
         }
       }
 
@@ -69,12 +65,12 @@ class TransactionController extends BaseController {
       });
 
       let message;
-      if (destinationWallet !== undefined) {
+      if (destinationTransfer !== undefined) {
         message = createNotificationMessage(
           slug,
           amount,
           wallet.dataValues.name,
-          destinationWallet.dataValues.name,
+          destinationTransfer.dataValues.name,
           name,
         );
       } else {
@@ -123,12 +119,12 @@ class TransactionController extends BaseController {
 
       if (type === Transfer) {
         if (!toWalletId) {
-          throw new Error(Errors.DestinationWalletEmpty);
+          throw new Error(Errors.DestinationTransferEmpty);
         }
 
-        const destinationWallet = await WalletService.getWalletByID(userId, toWalletId);
-        if (!destinationWallet) {
-          throw new Error(Errors.DestinationWalletNotFound);
+        const destinationTransfer = await WalletService.getWalletByID(userId, toWalletId);
+        if (!destinationTransfer) {
+          throw new Error(Errors.DestinationTransferNotFound);
         }
       }
 
@@ -151,14 +147,14 @@ class TransactionController extends BaseController {
 
       const {
         wallet_id: walletId,
-        to_wallet_id: destinationWalletId,
+        to_wallet_id: destinationTransferId,
         amount,
         type,
       } = transaction.dataValues;
 
       await WalletService.revertWalletBalance({
         walletId,
-        destinationWalletId,
+        destinationTransferId,
         amount,
         type,
       });
