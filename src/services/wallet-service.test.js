@@ -178,7 +178,7 @@ describe('getOtherWallets function', () => {
           [Op.not]: walletId,
         },
       },
-      attributes: { exclude: ['user_id', 'balance', 'currency', 'created_at'] },
+      attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at'] },
     });
   });
 
@@ -195,7 +195,7 @@ describe('getOtherWallets function', () => {
           [Op.not]: walletId,
         },
       },
-      attributes: { exclude: ['user_id', 'balance', 'currency', 'created_at'] },
+      attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at'] },
     });
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBe(0);
