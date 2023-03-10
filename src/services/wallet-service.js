@@ -36,7 +36,7 @@ class WalletService {
         [Op.not]: walletId,
       },
     },
-    attributes: { exclude: ['user_id', 'balance', 'currency', 'created_at'] },
+    attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at'] },
   });
 
   static addWallet = async ({
