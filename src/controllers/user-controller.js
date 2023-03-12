@@ -110,7 +110,7 @@ class UserController extends BaseController {
 
   static refreshToken = async (req, res) => {
     try {
-      const { username, token_version: tokenVersion } = req.decoded;
+      const { username, token_version: tokenVersion } = req.payload;
 
       const user = await UserService.getUserByUsername({ username });
 
@@ -129,7 +129,7 @@ class UserController extends BaseController {
 
   static logout = async (req, res) => {
     try {
-      const { username, token_version } = req.decoded;
+      const { username, token_version } = req.payload;
 
       const newVersion = token_version + 1;
 

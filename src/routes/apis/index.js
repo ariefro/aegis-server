@@ -8,11 +8,11 @@ import TransactionController from '../../controllers/transaction-controller';
 import LogController from '../../controllers/log-controller';
 
 const router = express.Router();
+const { validate, validationRules } = require('../../middlewares/validator');
 const {
-  validate,
-  validationRules,
+  validateAccessToken,
   validateRefreshToken,
-} = require('../../middlewares/validator');
+} = require('../../middlewares/tokenValidation');
 
 router.post(
   Routes.Register,
@@ -24,8 +24,18 @@ router.post(
   [validationRules(Services.Login), validate, Middleware.Guest],
   UserController.login,
 );
-router.post(Routes.Token, validateRefreshToken, UserController.refreshToken);
-router.post(Routes.Logout, validateRefreshToken, UserController.logout);
+
+router.post(
+  Routes.Token,
+  [validateAccessToken, validateRefreshToken],
+  UserController.refreshToken,
+);
+router.post(
+  Routes.Logout,
+  [Middleware.Auth, validateRefreshToken],
+  UserController.logout,
+);
+
 router.get(Routes.Users, [Middleware.Auth], UserController.getUsers);
 
 router.post(
@@ -81,10 +91,6 @@ router.delete(
   TransactionController.deleteTransaction,
 );
 
-router.get(
-  Routes.Logs,
-  [Middleware.Auth],
-  LogController.getLogs,
-);
+router.get(Routes.Logs, [Middleware.Auth], LogController.getLogs);
 
 export default router;

@@ -39,12 +39,9 @@ const Errors = {
 
   FailedToCreateCashFlow: 'Failed to create a cash flow',
 
-  TokenExpiredError: 'TokenExpiredError',
-  JsonWebTokenError: 'JsonWebTokenError',
-  NotBeforeError: 'NotBeforeError',
-  MissingSecretKey: 'Missing secret key',
-
+  NoTokenProvided: 'No token provided',
   TokenVersionNotValid: 'Token version not valid',
+  NotJwtToken: 'Token is not JsonWebToken string',
 };
 
 export default Errors;
