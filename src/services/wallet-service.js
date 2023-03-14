@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { Op } from 'sequelize';
 import { Income, Expense, Transfer } from '../constants';
 import { Wallet, CashFlow } from '../models';
@@ -36,7 +37,7 @@ class WalletService {
         [Op.not]: walletId,
       },
     },
-    attributes: { exclude: ['user_id', 'balance', 'currency', 'created_at'] },
+    attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at'] },
   });
 
   static addWallet = async ({
@@ -54,9 +55,9 @@ class WalletService {
   });
 
   static updateWalletBalance = async ({
-    walletID, toWalletID, amount, slug,
+    walletID, toWalletID, amount, generatedSlug,
   }) => {
-    const type = slugToType(slug);
+    const type = slugToType(generatedSlug);
 
     let balanceUpdate;
     if (type === Expense) {
@@ -72,7 +73,7 @@ class WalletService {
   };
 
   static revertWalletBalance = async ({
-    walletId, toWalletId, amount, type,
+    walletId, destinationTransferId, amount, type,
   }) => {
     let balanceUpdate;
     if (type === Expense) {
@@ -80,7 +81,7 @@ class WalletService {
     } else if (type === Income) {
       balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletId } });
     } else if (type === Transfer) {
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: toWalletId } });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: destinationTransferId } });
       balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletId } });
     }
 

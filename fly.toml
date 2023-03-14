@@ -1,16 +1,16 @@
-# fly.toml file generated for lacoste on 2022-11-22T21:56:45+07:00
+# fly.toml file generated for lakoste on 2023-03-14T19:33:22+07:00
 
-app = "lacoste"
+app = "lakoste"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
+[deploy]
+  release_command = "npx sequelize-cli db:migrate --env stage"
+
 [env]
   NODE_ENV = "stage"
 
-[deploy]
-  release_command = "npx sequelize-cli db:migrate --env stage"
-  
 [experimental]
   allowed_public_ports = []
   auto_rollback = true

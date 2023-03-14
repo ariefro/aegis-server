@@ -27,9 +27,13 @@ module.exports = (sequelize, DataTypes) => {
         },
         onDelete: 'SET NULL',
       },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       slug: {
         allowNull: false,
-        type: DataTypes.ENUM('payout', 'top up', 'transfer', 'payment'),
+        type: DataTypes.ENUM('payout', 'top-up', 'transfer', 'payment'),
       },
       message: {
         allowNull: false,

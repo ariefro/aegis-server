@@ -48,6 +48,7 @@ class TransactionService {
       where,
       limit,
       offset,
+      order: [['created_at', 'DESC']],
     });
 
     rows.forEach((transaction) => {
@@ -70,16 +71,16 @@ class TransactionService {
   static addTransaction = async ({
     walletID,
     toWalletID,
-    slug,
+    generatedSlug,
     currency,
     name,
     amount,
   }) => {
-    const type = slugToType(slug);
+    const type = slugToType(generatedSlug);
 
     const transaction = Transaction.create({
       type,
-      slug,
+      slug: generatedSlug,
       name,
       amount,
       currency,

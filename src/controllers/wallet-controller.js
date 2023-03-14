@@ -191,7 +191,7 @@ class WalletController extends BaseController {
   static getWalletsToTransfer = async (req, res) => {
     try {
       const owner = req.decoded.id;
-      const { wallet_id: walletID } = req.body;
+      const { id: walletID } = req.params;
 
       const wallets = await WalletService.getOtherWallets(owner, walletID);
 

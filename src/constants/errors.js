@@ -26,8 +26,9 @@ const Errors = {
   BalanceEmpty: 'Balance cannot be empty',
   UnableToAddWallet: 'Cannot add more wallet',
   WalletNotFound: 'Wallet not found',
-  DestinationWalletEmpty: 'Destination transfer cannot be empty',
-  DestinationWalletNotFound: 'Destination transfer not found',
+  DestinationTransferEmpty: 'Destination transfer cannot be empty',
+  DestinationTransferShouldBeEmpty: 'Destination transfer should be empty',
+  DestinationTransferNotFound: 'Destination transfer not found',
   UnableToDeleteWallet: 'Unable to delete a wallet',
   FailedToCreateWallet: 'Failed to create a wallet',
 

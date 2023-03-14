@@ -6,6 +6,7 @@ import { Transfer } from '../constants';
 import createNotificationMessage from '../utils/notificationMessage';
 import slugToType from '../utils/slugToType';
 import LogService from '../services/log-service';
+import generateSlug from '../utils/generateSlug';
 
 class TransactionController extends BaseController {
   static getTransactionsByWalletID = async (req, res) => {
@@ -37,20 +38,18 @@ class TransactionController extends BaseController {
         throw new Error(Errors.WalletNotFound);
       }
 
-      let destinationWallet;
+      let destinationTransfer;
       if (slug === Transfer) {
-        if (!toWalletID) {
-          throw new Error(Errors.DestinationWalletEmpty);
-        }
-
-        destinationWallet = await WalletService.getWalletByID(userID, toWalletID);
-        if (!destinationWallet) {
-          throw new Error(Errors.DestinationWalletNotFound);
+        destinationTransfer = await WalletService.getWalletByID(userID, toWalletID);
+        if (!destinationTransfer) {
+          throw new Error(Errors.DestinationTransferNotFound);
         }
       }
 
+      const generatedSlug = generateSlug(slug);
+
       const transaction = await TransactionService.addTransaction({
-        slug,
+        generatedSlug,
         name,
         currency,
         amount,
@@ -65,21 +64,21 @@ class TransactionController extends BaseController {
         walletID,
         toWalletID,
         amount,
-        slug,
+        generatedSlug,
       });
 
       let message;
-      if (destinationWallet !== undefined) {
+      if (destinationTransfer !== undefined) {
         message = createNotificationMessage(
-          slug,
+          generatedSlug,
           amount,
           wallet.dataValues.name,
-          destinationWallet.dataValues.name,
+          destinationTransfer.dataValues.name,
           name,
         );
       } else {
         message = createNotificationMessage(
-          slug,
+          generatedSlug,
           amount,
           wallet.dataValues.name,
           undefined,
@@ -87,9 +86,9 @@ class TransactionController extends BaseController {
         );
       }
 
-      const type = slugToType(slug);
+      const type = slugToType(generatedSlug);
 
-      await LogService.createLog(userID, slug, type, message);
+      await LogService.createLog(userID, wallet.dataValues.name, generatedSlug, type, message);
 
       return res.send(this.responseSuccess());
     } catch (err) {
@@ -123,12 +122,12 @@ class TransactionController extends BaseController {
 
       if (type === Transfer) {
         if (!toWalletId) {
-          throw new Error(Errors.DestinationWalletEmpty);
+          throw new Error(Errors.DestinationTransferEmpty);
         }
 
-        const destinationWallet = await WalletService.getWalletByID(userId, toWalletId);
-        if (!destinationWallet) {
-          throw new Error(Errors.DestinationWalletNotFound);
+        const destinationTransfer = await WalletService.getWalletByID(userId, toWalletId);
+        if (!destinationTransfer) {
+          throw new Error(Errors.DestinationTransferNotFound);
         }
       }
 
@@ -151,14 +150,14 @@ class TransactionController extends BaseController {
 
       const {
         wallet_id: walletId,
-        to_wallet_id: destinationWalletId,
+        to_wallet_id: destinationTransferId,
         amount,
         type,
       } = transaction.dataValues;
 
       await WalletService.revertWalletBalance({
         walletId,
-        destinationWalletId,
+        destinationTransferId,
         amount,
         type,
       });

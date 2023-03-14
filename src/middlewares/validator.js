@@ -1,74 +1,87 @@
 import { body, param, validationResult } from 'express-validator';
 import Services from '../constants/services';
 import Errors from '../constants/errors';
-import constants from '../constants';
+import {
+  Currency, Email, Id, Name, Password, Transfer, TypeTransaction, Username,
+} from '../constants';
+import Jwt from '../utils/jwt';
 
 const validationRules = (service) => {
   switch (service) {
     case Services.RegisterUser: {
       return [
-        body(constants.Username, Errors.UsernameEmpty).exists().notEmpty(),
-        body(constants.Email, Errors.EmailEmpty).exists().notEmpty(),
-        body(constants.Email, Errors.InvalidEmail).isEmail(),
-        body(constants.Password, Errors.PasswordEmpty).exists(),
-        body(constants.Password, Errors.LengthPassword).isLength({ min: 8 }),
+        body(Username, Errors.UsernameEmpty).exists().notEmpty(),
+        body(Email, Errors.EmailEmpty).exists().notEmpty(),
+        body(Email, Errors.InvalidEmail).isEmail(),
+        body(Password, Errors.PasswordEmpty).exists(),
+        body(Password, Errors.LengthPassword).isLength({ min: 8 }),
       ];
     }
 
     case Services.Login: {
       return [
-        body(constants.Username, Errors.UsernameEmpty).exists().notEmpty(),
-        body(constants.Password, Errors.PasswordEmpty).exists().notEmpty(),
+        body(Username, Errors.UsernameEmpty).exists().notEmpty(),
+        body(Password, Errors.PasswordEmpty).exists().notEmpty(),
       ];
     }
 
     case Services.AddWallet: {
       return [
-        body(constants.Name, Errors.NameEmpty).exists().notEmpty(),
-        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Name, Errors.NameEmpty).exists().notEmpty(),
+        body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
       ];
     }
 
     case Services.UpdateWallet: {
       return [
-        body(constants.Name, Errors.NameEmpty).notEmpty(),
-        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
-        param(constants.Id, Errors.WalletNotFound).isUUID(),
+        body(Name, Errors.NameEmpty).notEmpty(),
+        body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        param(Id, Errors.WalletNotFound).isUUID(),
       ];
     }
 
     case Services.DeleteWallet: {
-      return [param(constants.Id, Errors.WalletNotFound).isUUID()];
+      return [param(Id, Errors.WalletNotFound).isUUID()];
     }
 
     case Services.AddTransaction: {
       return [
-        body(constants.TypeTransaction, Errors.InvalidTypeTransaction).isIn([
+        body(TypeTransaction, Errors.InvalidTypeTransaction).isIn([
           'payout',
           'top up',
           'transfer',
           'payment',
-        ]),
-        body(constants.Name, Errors.NameTransactionEmpty).notEmpty(),
-        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        ]).custom((value, { req }) => {
+          if (value !== Transfer && req.body.to_wallet_id) {
+            throw new Error(Errors.DestinationTransferShouldBeEmpty);
+          }
+          return true;
+        }).custom((value, { req }) => {
+          if (value === Transfer && !req.body.to_wallet_id) {
+            throw new Error(Errors.DestinationTransferEmpty);
+          }
+          return true;
+        }),
+        body(Name, Errors.NameTransactionEmpty).notEmpty(),
+        body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
       ];
     }
 
     case Services.UpdateTransaction: {
       return [
-        body(constants.TypeTransaction, Errors.InvalidTypeTransaction).isIn([
+        body(TypeTransaction, Errors.InvalidTypeTransaction).isIn([
           'payout',
           'top up',
           'transfer',
           'payment',
         ]),
-        body(constants.Name, Errors.NameTransactionEmpty).notEmpty(),
-        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Name, Errors.NameTransactionEmpty).notEmpty(),
+        body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
       ];
     }
 
     case Services.DeleteTransaction: {
-      return [param(constants.Id, Errors.TransactionNotFound).isUUID()];
+      return [param(Id, Errors.TransactionNotFound).isUUID()];
     }
 
     default: {

@@ -17,7 +17,7 @@ class BaseController {
       case Errors.NameOnlyLetters:
       case Errors.NameAlreadyExists:
       case Errors.BalanceEmpty:
-      case Errors.DestinationWalletEmpty:
+      case Errors.DestinationTransferEmpty:
       case Errors.FailedToCreateTransaction:
       case Errors.FailedToRegister:
       case Errors.FailedToCreateCashFlow:
@@ -32,7 +32,7 @@ class BaseController {
 
       case Errors.DataNotFound:
       case Errors.EmailNotFound:
-      case Errors.DestinationWalletNotFound:
+      case Errors.DestinationTransferNotFound:
       case Errors.TransactionNotFound:
       case Errors.UserNotFound:
       case Errors.WalletNotFound:
