@@ -15,6 +15,13 @@ class UserService {
     return user;
   };
 
+  static getUserById = async ({ id }) => {
+    const user = await User.findOne({
+      where: { id },
+    });
+    return user;
+  };
+
   static getUserByUsername = async ({ username }) => {
     const user = await User.findOne({
       where: { username },

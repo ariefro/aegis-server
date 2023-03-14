@@ -101,27 +101,7 @@ const validate = (req, res, next) => {
   return res.status(400).send(extractedErrors[0]);
 };
 
-const validateRefreshToken = async (req, res, next) => {
-  const { refresh_token: refreshToken } = req.cookies;
-
-  if (!refreshToken) {
-    return res.status(403).send({
-      status: 'Error',
-      message: 'No token provided',
-    });
-  }
-
-  const verify = await Jwt.verifyRefreshToken(refreshToken);
-
-  if (verify.username) {
-    req.decoded = verify;
-    return next();
-  }
-  return res.status(400).send({ status: verify.name, message: verify.message });
-};
-
 module.exports = {
   validationRules,
   validate,
-  validateRefreshToken,
 };

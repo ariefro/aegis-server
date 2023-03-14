@@ -138,6 +138,8 @@ class TransactionService {
       }
     });
 
+    console.log({ income, expense });
+
     return { income, expense };
   };
 
