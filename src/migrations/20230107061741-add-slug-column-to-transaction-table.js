@@ -1,7 +1,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.addColumn('transactions', 'slug', {
-      type: Sequelize.ENUM('payout', 'payment', 'transfer', 'top up'),
+      type: Sequelize.ENUM('payout', 'payment', 'transfer', 'top-up'),
     });
   },
 
