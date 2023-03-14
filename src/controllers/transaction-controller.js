@@ -6,6 +6,7 @@ import { Transfer } from '../constants';
 import createNotificationMessage from '../utils/notificationMessage';
 import slugToType from '../utils/slugToType';
 import LogService from '../services/log-service';
+import generateSlug from '../utils/generateSlug';
 
 class TransactionController extends BaseController {
   static getTransactionsByWalletID = async (req, res) => {
@@ -45,8 +46,10 @@ class TransactionController extends BaseController {
         }
       }
 
+      const generatedSlug = generateSlug(slug);
+
       const transaction = await TransactionService.addTransaction({
-        slug,
+        generatedSlug,
         name,
         currency,
         amount,
@@ -61,13 +64,13 @@ class TransactionController extends BaseController {
         walletID,
         toWalletID,
         amount,
-        slug,
+        generatedSlug,
       });
 
       let message;
       if (destinationTransfer !== undefined) {
         message = createNotificationMessage(
-          slug,
+          generatedSlug,
           amount,
           wallet.dataValues.name,
           destinationTransfer.dataValues.name,
@@ -75,7 +78,7 @@ class TransactionController extends BaseController {
         );
       } else {
         message = createNotificationMessage(
-          slug,
+          generatedSlug,
           amount,
           wallet.dataValues.name,
           undefined,
@@ -83,9 +86,9 @@ class TransactionController extends BaseController {
         );
       }
 
-      const type = slugToType(slug);
+      const type = slugToType(generatedSlug);
 
-      await LogService.createLog(userID, slug, type, message);
+      await LogService.createLog(userID, wallet.dataValues.name, generatedSlug, type, message);
 
       return res.send(this.responseSuccess());
     } catch (err) {

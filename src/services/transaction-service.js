@@ -70,16 +70,16 @@ class TransactionService {
   static addTransaction = async ({
     walletID,
     toWalletID,
-    slug,
+    generatedSlug,
     currency,
     name,
     amount,
   }) => {
-    const type = slugToType(slug);
+    const type = slugToType(generatedSlug);
 
     const transaction = Transaction.create({
       type,
-      slug,
+      slug: generatedSlug,
       name,
       amount,
       currency,
@@ -136,8 +136,6 @@ class TransactionService {
         }
       }
     });
-
-    console.log({ income, expense });
 
     return { income, expense };
   };
