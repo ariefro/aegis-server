@@ -48,6 +48,7 @@ class TransactionService {
       where,
       limit,
       offset,
+      order: [['created_at', 'DESC']],
     });
 
     rows.forEach((transaction) => {
