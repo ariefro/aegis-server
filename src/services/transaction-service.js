@@ -92,25 +92,48 @@ class TransactionService {
   };
 
   static updateTransaction = async (id, {
-    walletId,
-    toWalletId,
-    note,
+    walletID,
+    toWalletID,
+    name,
     amount,
     currency,
+    generatedSlug,
     type,
-  }) => Transaction.update(
-    {
-      wallet_id: walletId,
-      to_wallet_id: toWalletId,
-      note,
-      amount,
-      currency,
-      type,
-    },
-    {
-      where: { id },
-    },
-  );
+  }) => {
+    let result;
+    if (generatedSlug === Transfer && toWalletID) {
+      result = Transaction.update(
+        {
+          wallet_id: walletID,
+          to_wallet_id: toWalletID,
+          name,
+          amount,
+          currency,
+          slug: generatedSlug,
+          type,
+        },
+        {
+          where: { id },
+        },
+      );
+    } else {
+      result = Transaction.update(
+        {
+          wallet_id: walletID,
+          name,
+          amount,
+          currency,
+          slug: generatedSlug,
+          type,
+        },
+        {
+          where: { id },
+        },
+      );
+    }
+
+    return result;
+  };
 
   static getTransactionsByType = async (typeTransaction, id) => Transaction.findAll({
     where: {
