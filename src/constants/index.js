@@ -4,14 +4,16 @@ module.exports = {
   DummyNameWallet: 'cash',
   Token: 'token',
 
-  Id: 'id',
+  ID: 'id',
   Username: 'username',
   Email: 'email',
   Password: 'password',
 
+  Amount: 'amount',
   Balance: 'balance',
   Currency: 'currency',
   Name: 'name',
+  WalletID: 'wallet_id',
 
   TypeTransaction: 'slug',
   Transfer: 'transfer',

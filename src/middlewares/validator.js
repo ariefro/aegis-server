@@ -2,7 +2,8 @@ import { body, param, validationResult } from 'express-validator';
 import Services from '../constants/services';
 import Errors from '../constants/errors';
 import {
-  Currency, Email, Id, Name, Password, Transfer, TypeTransaction, Username,
+  Amount,
+  Currency, Email, ID, Name, Password, Transfer, TypeTransaction, Username, WalletID,
 } from '../constants';
 import Jwt from '../utils/jwt';
 
@@ -34,14 +35,14 @@ const validationRules = (service) => {
 
     case Services.UpdateWallet: {
       return [
+        param(ID, Errors.WalletNotFound).notEmpty().isUUID(),
         body(Name, Errors.NameEmpty).notEmpty(),
         body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
-        param(Id, Errors.WalletNotFound).isUUID(),
       ];
     }
 
     case Services.DeleteWallet: {
-      return [param(Id, Errors.WalletNotFound).isUUID()];
+      return [param(ID, Errors.WalletEmpty).notEmpty().isUUID()];
     }
 
     case Services.AddTransaction: {
@@ -62,26 +63,43 @@ const validationRules = (service) => {
           }
           return true;
         }),
+        body(WalletID, Errors.WalletEmpty).notEmpty().isUUID(),
         body(Name, Errors.NameTransactionEmpty).notEmpty(),
+        body(Name, Errors.NameTransactionOnlyLetters).isString(),
         body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Amount, Errors.AmountEmpty).notEmpty(),
+        body(Amount, Errors.AmountOnlyNumbers).isInt({ min: 0 }),
       ];
     }
 
     case Services.UpdateTransaction: {
       return [
+        param(ID, Errors.TransactionNotFound).notEmpty().isUUID(),
         body(TypeTransaction, Errors.InvalidTypeTransaction).isIn([
           'payout',
           'top up',
           'transfer',
           'payment',
-        ]),
+        ]).custom((value, { req }) => {
+          if (value !== Transfer && req.body.to_wallet_id) {
+            throw new Error(Errors.DestinationTransferShouldBeEmpty);
+          }
+          return true;
+        }).custom((value, { req }) => {
+          if (value === Transfer && !req.body.to_wallet_id) {
+            throw new Error(Errors.DestinationTransferEmpty);
+          }
+          return true;
+        }),
         body(Name, Errors.NameTransactionEmpty).notEmpty(),
         body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Amount, Errors.AmountEmpty).notEmpty(),
+        body(Amount, Errors.AmountOnlyNumbers).isInt({ min: 0 }),
       ];
     }
 
     case Services.DeleteTransaction: {
-      return [param(Id, Errors.TransactionNotFound).isUUID()];
+      return [param(ID, Errors.TransactionNotFound).notEmpty().isUUID()];
     }
 
     default: {
