@@ -27,6 +27,36 @@ module.exports = (sequelize, DataTypes) => {
         },
         onDelete: 'SET NULL',
       },
+      wallet_id: {
+        type: DataTypes.UUID,
+        references: {
+          key: 'id',
+          model: {
+            tableName: 'wallets',
+          },
+        },
+        onDelete: 'SET NULL',
+      },
+      to_wallet_id: {
+        type: DataTypes.UUID,
+        references: {
+          key: 'id',
+          model: {
+            tableName: 'wallets',
+          },
+        },
+        onDelete: 'SET NULL',
+      },
+      transaction_id: {
+        type: DataTypes.UUID,
+        references: {
+          key: 'id',
+          model: {
+            tableName: 'transactions',
+          },
+        },
+        onDelete: 'SET NULL',
+      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
