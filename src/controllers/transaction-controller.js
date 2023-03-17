@@ -88,7 +88,16 @@ class TransactionController extends BaseController {
 
       const type = slugToType(generatedSlug);
 
-      await LogService.createLog(userID, wallet.dataValues.name, generatedSlug, type, message);
+      await LogService.createLog(
+        userID,
+        walletID,
+        toWalletID,
+        transaction.dataValues.id,
+        wallet.dataValues.name,
+        generatedSlug,
+        type,
+        message,
+      );
 
       return res.send(this.responseSuccess());
     } catch (err) {
@@ -158,6 +167,37 @@ class TransactionController extends BaseController {
         generatedSlug,
       });
 
+      let message;
+      if (destinationTransfer !== undefined) {
+        message = createNotificationMessage(
+          generatedSlug,
+          amount,
+          wallet.dataValues.name,
+          destinationTransfer.dataValues.name,
+          name,
+        );
+      } else {
+        message = createNotificationMessage(
+          generatedSlug,
+          amount,
+          wallet.dataValues.name,
+          undefined,
+          name,
+        );
+      }
+
+      await LogService.updateLog(
+        transaction.dataValues.id,
+        {
+          walletID,
+          toWalletID,
+          name,
+          generatedSlug,
+          type,
+          message,
+        },
+      );
+
       return res.send(this.responseSuccess());
     } catch (err) {
       const error = this.getError(err);
@@ -176,15 +216,15 @@ class TransactionController extends BaseController {
       }
 
       const {
-        wallet_id: walletId,
-        to_wallet_id: destinationTransferId,
+        wallet_id: walletID,
+        to_wallet_id: destinationTransferID,
         amount,
         type,
       } = transaction.dataValues;
 
       await WalletService.revertWalletBalance({
-        walletId,
-        destinationTransferId,
+        walletID,
+        destinationTransferID,
         amount,
         type,
       });
