@@ -31,16 +31,18 @@ const Errors = {
   WalletEmpty: 'Wallet ID cannot be empty',
   DestinationTransferEmpty: 'Destination transfer cannot be empty',
   DestinationTransferShouldBeEmpty: 'Destination transfer should be empty',
+  TypeOfTransactionShouldBeEmpty: 'Type of transaction should be empty',
   DestinationTransferNotFound: 'Destination transfer not found',
   UnableToDeleteWallet: 'Unable to delete a wallet',
   FailedToCreateWallet: 'Failed to create a wallet',
 
   InvalidTypeTransaction:
-    'Transaction must be either both payout, payment, top up, and transfer',
+  'Transaction must be either both payout, payment, top up, and transfer',
   FailedToCreateTransaction: 'Failed to create a transaction',
   TransactionNotFound: 'Transaction not found',
   NameTransactionOnlyLetters: 'Name of the transaction contains only letters',
   NameTransactionEmpty: 'Name of the transaction cannot be empty',
+  UnableToCreateTransferTransaction: 'It is not possible to create a transfer transaction with the same account',
 
   FailedToCreateCashFlow: 'Failed to create a cash flow',
 
