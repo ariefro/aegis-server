@@ -68,7 +68,7 @@ class LogService {
       ],
     },
     order: [['created_at', 'DESC']],
-    attributes: { exclude: ['user_id', 'transaction_id', 'slug'] },
+    attributes: { exclude: ['user_id', 'wallet_id', 'to_wallet_id', 'transaction_id', 'slug'] },
   });
 
   static updateLogMessage = async (walletID) => {
