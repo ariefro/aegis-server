@@ -1,6 +1,7 @@
 import { Success } from '../constants';
 import Errors from '../constants/errors';
 import CashFlowService from '../services/cash-flow-service';
+import LogService from '../services/log-service';
 import TransactionService from '../services/transaction-service';
 import WalletService from '../services/wallet-service';
 import BaseController from './base-controller';
@@ -147,6 +148,8 @@ class WalletController extends BaseController {
       if (!wallet) {
         throw new Error(Errors.WalletNotFound);
       }
+
+      await LogService.updateLogMessage(id);
 
       await WalletService.deleteWallet(wallet);
 

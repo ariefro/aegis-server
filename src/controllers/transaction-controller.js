@@ -191,7 +191,7 @@ class TransactionController extends BaseController {
         {
           walletID,
           toWalletID,
-          name,
+          name: wallet.dataValues.name,
           generatedSlug,
           type,
           message,

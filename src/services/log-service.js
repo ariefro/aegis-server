@@ -1,4 +1,5 @@
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
+import { Transfer } from '../constants';
 import { Log } from '../models';
 
 class LogService {
@@ -67,8 +68,40 @@ class LogService {
       ],
     },
     order: [['created_at', 'DESC']],
-    attributes: { exclude: ['id', 'user_id', 'wallet_id', 'to_wallet_id', 'transaction_id', 'slug'] },
+    attributes: { exclude: ['user_id', 'transaction_id', 'slug'] },
   });
+
+  static updateLogMessage = async (walletID) => {
+    let result = await Log.update(
+      {
+        message: Sequelize.fn('replace', Sequelize.col('message'), 'to', '(wallet removed) to'),
+      },
+      {
+        where: {
+          [Op.and]: [
+            { wallet_id: walletID },
+            { type: Transfer },
+          ],
+        },
+      },
+    );
+
+    result = await Log.update(
+      {
+        message: Sequelize.fn('replace', Sequelize.col('message'), 'for', '(wallet removed) for'),
+      },
+      {
+        where: {
+          [Op.and]: [
+            { to_wallet_id: walletID },
+            { type: Transfer },
+          ],
+        },
+      },
+    );
+
+    return result;
+  };
 }
 
 export default LogService;
