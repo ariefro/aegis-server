@@ -88,7 +88,16 @@ class TransactionController extends BaseController {
 
       const type = slugToType(generatedSlug);
 
-      await LogService.createLog(userID, wallet.dataValues.name, generatedSlug, type, message);
+      await LogService.createLog(
+        userID,
+        walletID,
+        toWalletID,
+        transaction.dataValues.id,
+        wallet.dataValues.name,
+        generatedSlug,
+        type,
+        message,
+      );
 
       return res.send(this.responseSuccess());
     } catch (err) {
@@ -101,9 +110,9 @@ class TransactionController extends BaseController {
   static updateTransaction = async (req, res) => {
     try {
       const { id } = req.params;
-      const userId = req.decoded.id;
+      const userID = req.decoded.id;
       const {
-        type, currency, amount, note, wallet_id: walletId, to_wallet_id: toWalletId,
+        slug, currency, amount, name, wallet_id: walletID, to_wallet_id: toWalletID,
       } = req.body;
 
       const transaction = await TransactionService.getTransactionByID(id);
@@ -111,25 +120,83 @@ class TransactionController extends BaseController {
         throw new Error(Errors.TransactionNotFound);
       }
 
-      await TransactionService.updateTransaction(id, {
-        walletId,
-        toWalletId,
-        note,
-        amount,
-        currency,
-        type,
-      });
+      const wallet = await WalletService.getWalletByID(userID, walletID);
+      if (!wallet) {
+        throw new Error(Errors.WalletNotFound);
+      }
 
-      if (type === Transfer) {
-        if (!toWalletId) {
-          throw new Error(Errors.DestinationTransferEmpty);
-        }
+      const {
+        wallet_id: walletIDOfTransaction,
+        to_wallet_id: destinationTransferIDOfTransaction,
+        amount: amountOfTransaction,
+        type: typeOfTransaction,
+      } = transaction.dataValues;
 
-        const destinationTransfer = await WalletService.getWalletByID(userId, toWalletId);
+      let destinationTransfer;
+      if (slug === Transfer) {
+        destinationTransfer = await WalletService.getWalletByID(userID, toWalletID);
         if (!destinationTransfer) {
           throw new Error(Errors.DestinationTransferNotFound);
         }
       }
+
+      const generatedSlug = generateSlug(slug);
+      const type = slugToType(generatedSlug);
+
+      await TransactionService.updateTransaction(id, {
+        walletID,
+        toWalletID,
+        name,
+        amount,
+        currency,
+        generatedSlug,
+        type,
+      });
+
+      await WalletService.revertWalletBalance({
+        walletID: walletIDOfTransaction,
+        destinationTransferID: destinationTransferIDOfTransaction,
+        amount: amountOfTransaction,
+        type: typeOfTransaction,
+      });
+
+      await WalletService.updateWalletBalance({
+        walletID,
+        toWalletID,
+        amount,
+        generatedSlug,
+      });
+
+      let message;
+      if (destinationTransfer !== undefined) {
+        message = createNotificationMessage(
+          generatedSlug,
+          amount,
+          wallet.dataValues.name,
+          destinationTransfer.dataValues.name,
+          name,
+        );
+      } else {
+        message = createNotificationMessage(
+          generatedSlug,
+          amount,
+          wallet.dataValues.name,
+          undefined,
+          name,
+        );
+      }
+
+      await LogService.updateLog(
+        transaction.dataValues.id,
+        {
+          walletID,
+          toWalletID,
+          name: wallet.dataValues.name,
+          generatedSlug,
+          type,
+          message,
+        },
+      );
 
       return res.send(this.responseSuccess());
     } catch (err) {
@@ -149,15 +216,15 @@ class TransactionController extends BaseController {
       }
 
       const {
-        wallet_id: walletId,
-        to_wallet_id: destinationTransferId,
+        wallet_id: walletID,
+        to_wallet_id: destinationTransferID,
         amount,
         type,
       } = transaction.dataValues;
 
       await WalletService.revertWalletBalance({
-        walletId,
-        destinationTransferId,
+        walletID,
+        destinationTransferID,
         amount,
         type,
       });

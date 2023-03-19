@@ -18,6 +18,8 @@ const Errors = {
   UsernameEmpty: 'Username cannot be empty',
   FailedToRegister: 'Failed to register user',
 
+  AmountEmpty: 'Amount cannot be empty',
+  AmountOnlyNumbers: 'Amount must be positive numbers',
   InvalidCurrency: 'Currency must be IDR',
   InvalidId: 'Invalid ID',
   NameEmpty: 'Name cannot be empty',
@@ -26,17 +28,21 @@ const Errors = {
   BalanceEmpty: 'Balance cannot be empty',
   UnableToAddWallet: 'Cannot add more wallet',
   WalletNotFound: 'Wallet not found',
+  WalletEmpty: 'Wallet ID cannot be empty',
   DestinationTransferEmpty: 'Destination transfer cannot be empty',
   DestinationTransferShouldBeEmpty: 'Destination transfer should be empty',
+  TypeOfTransactionShouldBeEmpty: 'Type of transaction should be empty',
   DestinationTransferNotFound: 'Destination transfer not found',
   UnableToDeleteWallet: 'Unable to delete a wallet',
   FailedToCreateWallet: 'Failed to create a wallet',
 
   InvalidTypeTransaction:
-    'Transaction must be either both payout, payment, top up, and transfer',
+  'Transaction must be either both payout, payment, top up, and transfer',
   FailedToCreateTransaction: 'Failed to create a transaction',
   TransactionNotFound: 'Transaction not found',
-  NameTransactionEmpty: 'Name of transaction cannot be empty',
+  NameTransactionOnlyLetters: 'Name of the transaction contains only letters',
+  NameTransactionEmpty: 'Name of the transaction cannot be empty',
+  UnableToCreateTransferTransaction: 'It is not possible to create a transfer transaction with the same account',
 
   FailedToCreateCashFlow: 'Failed to create a cash flow',
 
