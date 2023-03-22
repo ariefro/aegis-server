@@ -13,6 +13,7 @@ module.exports = {
   Balance: 'balance',
   Currency: 'currency',
   Name: 'name',
+  Status: 'status',
   Type: 'type',
   WalletID: 'wallet_id',
 

@@ -20,7 +20,9 @@ const Errors = {
 
   AmountEmpty: 'Amount cannot be empty',
   AmountOnlyNumbers: 'Amount must be positive numbers',
-  InvalidCurrency: 'Currency must be IDR',
+  BalanceOnlyNumbers: 'Balance contains only numbers',
+  InvalidCurrency: 'Currency is only available in IDR',
+  InvalidStatus: 'Status can be either active or inactive',
   InvalidId: 'Invalid ID',
   NameEmpty: 'Name cannot be empty',
   NameOnlyLetters: 'Name contains only letters',

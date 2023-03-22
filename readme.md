@@ -88,7 +88,7 @@ make migratedown
 
 ### API Documentation
 
-- Access the API documentation at [this address](https://documenter.getpostman.com/view/16991559/2s8YekREej).
+- Access the API documentation at [this address](https://lakoste.stoplight.io/docs/laskote-api/ce6d8e3a42caa-api-overview).
 
 ### DB Documentation
 
