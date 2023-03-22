@@ -10,7 +10,7 @@ const app = express();
 
 app.use(morgan('common'));
 
-const whitelist = ['http://localhost:3000', 'https://stage-aegis.vercel.app'];
+const whitelist = ['http://localhost:3000', 'https://stage-aegis.vercel.app', 'https://lakoste.stoplight.io'];
 app.use(cookieParser());
 
 app.use(cors({
