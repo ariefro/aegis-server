@@ -36,7 +36,7 @@ const validateAccessToken = async (req, res, next) => {
     req.decoded = payload;
     return next();
   } catch (error) {
-    return res.status(401).send({ status: error.name, message: error.message });
+    return res.status(401).send({ message: error.message });
   }
 };
 
@@ -79,7 +79,7 @@ const validateRefreshToken = async (req, res, next) => {
     req.payload = payload;
     return next();
   } catch (error) {
-    return res.status(401).send({ status: error.name, message: error.message });
+    return res.status(401).send({ message: error.message });
   }
 };
 

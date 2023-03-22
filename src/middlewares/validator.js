@@ -3,7 +3,8 @@ import Services from '../constants/services';
 import Errors from '../constants/errors';
 import {
   Amount,
-  Currency, Email, ID, Name, Password, Transfer, Type, TypeTransaction, Username, WalletID,
+  Balance,
+  Currency, Email, ID, Name, Password, Status, Transfer, Type, TypeTransaction, Username, WalletID,
 } from '../constants';
 
 const validationRules = (service) => {
@@ -36,7 +37,10 @@ const validationRules = (service) => {
       return [
         param(ID, Errors.WalletNotFound).notEmpty().isUUID(),
         body(Name, Errors.NameEmpty).notEmpty(),
+        body(Status, Errors.InvalidStatus).isIn(['active', 'inactive']),
         body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Balance, Errors.BalanceEmpty).notEmpty(),
+        body(Balance, Errors.BalanceOnlyNumbers).isInt(),
       ];
     }
 

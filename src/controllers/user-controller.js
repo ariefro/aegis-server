@@ -142,8 +142,7 @@ class UserController extends BaseController {
         })
         .clearCookie('refresh_token')
         .send({
-          status: 'success',
-          message: 'User Logout',
+          message: 'success',
         });
     } catch (error) {
       res.send(error.message);
