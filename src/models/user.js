@@ -32,17 +32,22 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.STRING,
       },
-      created_at: {
-        allowNull: false,
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
       refresh_token: {
         type: DataTypes.STRING,
       },
       token_version: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
+      },
+      created_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
       },
     },
     {
