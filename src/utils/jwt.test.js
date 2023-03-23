@@ -69,7 +69,7 @@ describe('JWT decode', () => {
   it('should decode a valid token', () => {
     const token = jwt.sign(payload, process.env.SECRET, Jwt.OPTIONS);
     const decoded = Jwt.decodeToken(token);
-    expect(decoded).toMatchObject(payload);
+    expect(decoded.payload).toMatchObject(payload);
   });
 
   it('should return null for an invalid token', () => {

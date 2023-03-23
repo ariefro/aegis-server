@@ -8,7 +8,7 @@ describe('transform slug to type', () => {
   });
 
   it('should return income when slug is top up', () => {
-    const result = slugToType('top up');
+    const result = slugToType('top-up');
 
     expect(result).toBe('income');
   });

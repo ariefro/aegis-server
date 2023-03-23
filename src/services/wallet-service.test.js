@@ -38,7 +38,7 @@ describe('getWallets function', () => {
     expect(Array.isArray(result)).toBe(true);
     expect(Wallet.findAll).toHaveBeenCalledWith({
       where: { user_id: userId },
-      attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at'] },
+      attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at', 'updated_at'] },
     });
     expect(result).toEqual(expectedResult);
   });
@@ -51,7 +51,7 @@ describe('getWallets function', () => {
     expect(spyGetWallets).toHaveBeenCalledTimes(1);
     expect(Wallet.findAll).toHaveBeenCalledWith({
       where: { user_id: userId },
-      attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at'] },
+      attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at', 'updated_at'] },
     });
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBe(0);
@@ -178,7 +178,7 @@ describe('getOtherWallets function', () => {
           [Op.not]: walletId,
         },
       },
-      attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at'] },
+      attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at', 'updated_at'] },
     });
   });
 
@@ -195,7 +195,7 @@ describe('getOtherWallets function', () => {
           [Op.not]: walletId,
         },
       },
-      attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at'] },
+      attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at', 'updated_at'] },
     });
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBe(0);
