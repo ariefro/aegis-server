@@ -38,6 +38,7 @@ class LogService {
       slug: generatedSlug,
       type,
       message,
+      updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
     },
     {
       where: { transaction_id: transactionID },
@@ -75,6 +76,8 @@ class LogService {
     let result = await Log.update(
       {
         message: Sequelize.fn('replace', Sequelize.col('message'), 'to', '(wallet removed) to'),
+        updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
+
       },
       {
         where: {

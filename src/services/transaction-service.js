@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import {
   Income, Expense, Transfer, DummyDate, TopUp,
 } from '../constants';
@@ -111,6 +111,7 @@ class TransactionService {
           currency,
           slug: generatedSlug,
           type,
+          updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
         },
         {
           where: { id },
@@ -125,6 +126,7 @@ class TransactionService {
           currency,
           slug: generatedSlug,
           type,
+          updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
         },
         {
           where: { id },
@@ -160,8 +162,6 @@ class TransactionService {
         }
       }
     });
-
-    console.log({ income, expense });
 
     return { income, expense };
   };

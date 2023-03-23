@@ -53,11 +53,11 @@ class WalletController extends BaseController {
       wallet = await WalletService.getWalletByID(userID, id);
 
       const {
-        name, status, currency, balance, total, created_at,
+        name, status, currency, balance, total, created_at, updated_at,
       } = wallet.dataValues;
 
       return res.send({
-        name, status, currency, balance, total, created_at,
+        name, status, currency, balance, total, created_at, updated_at,
       });
     } catch (err) {
       const error = this.getError(err);

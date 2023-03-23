@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import { Income, Expense, Transfer } from '../constants';
 import { Wallet, CashFlow } from '../models';
 import slugToType from '../utils/slugToType';
@@ -9,7 +9,7 @@ class WalletService {
     where: {
       user_id: id,
     },
-    attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at'] },
+    attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at', 'updated_at'] },
   });
 
   static getWalletByID = async (userId, id) => Wallet.findOne({
@@ -37,7 +37,7 @@ class WalletService {
         [Op.not]: walletId,
       },
     },
-    attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at'] },
+    attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at', 'updated_at'] },
   });
 
   static addWallet = async ({
@@ -103,6 +103,7 @@ class WalletService {
       status,
       balance,
       currency,
+      updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
     },
     {
       where: { id },

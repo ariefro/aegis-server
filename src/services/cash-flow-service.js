@@ -1,3 +1,4 @@
+import { Sequelize } from 'sequelize';
 import { CashFlow } from '../models';
 
 class CashFlowService {
@@ -11,6 +12,7 @@ class CashFlowService {
       {
         income,
         expense,
+        updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       {
         where: {
