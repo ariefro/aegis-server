@@ -1,3 +1,4 @@
+import { sequelize } from '../models';
 import { Success } from '../constants';
 import Errors from '../constants/errors';
 import CashFlowService from '../services/cash-flow-service';
@@ -36,18 +37,7 @@ class WalletController extends BaseController {
         throw new Error(Errors.WalletNotFound);
       }
 
-      let { cash_flow_id: cashFlowID } = wallet.dataValues;
-      if (cashFlowID == null) {
-        const cashFlow = await CashFlowService.addCashFlow();
-        cashFlowID = cashFlow.dataValues.id;
-
-        await CashFlowService.updateCashFlow(cashFlowID, income, expense);
-        await WalletService.updateCashFlowWallet(id, cashFlowID);
-        wallet = await WalletService.getWalletByID(userID, id);
-
-        return res.send(wallet);
-      }
-
+      const { cash_flow_id: cashFlowID } = wallet.dataValues;
       await CashFlowService.updateCashFlow(cashFlowID, income, expense);
 
       wallet = await WalletService.getWalletByID(userID, id);
@@ -68,22 +58,26 @@ class WalletController extends BaseController {
 
   static addWallet = async (req, res) => {
     try {
-      const { name, balance, currency } = req.body;
-      const { id: userID } = req.decoded;
+      let wallet;
+      await sequelize.transaction(async (transaction) => {
+        const { name, balance, currency } = req.body;
+        const { id: userID } = req.decoded;
 
-      const wallets = await WalletService.getWallets(userID);
-      if (wallets.length === 6) {
-        throw new Error(Errors.UnableToAddWallet);
-      }
+        const wallets = await WalletService.getWallets(userID);
+        if (wallets.length === 6) {
+          throw new Error(Errors.UnableToAddWallet);
+        }
 
-      const cashFlow = await CashFlowService.addCashFlow();
-      const cashFlowID = cashFlow.dataValues.id;
-      const wallet = await WalletService.addWallet({
-        name,
-        balance,
-        currency,
-        userID,
-        cashFlowID,
+        const cashFlow = await CashFlowService.addCashFlow({ transaction });
+        const cashFlowID = cashFlow.dataValues.id;
+        wallet = await WalletService.addWallet({
+          name,
+          balance,
+          currency,
+          userID,
+          cashFlowID,
+          transaction,
+        });
       });
 
       return res.send({
