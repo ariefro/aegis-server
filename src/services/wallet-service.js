@@ -46,13 +46,14 @@ class WalletService {
     currency,
     userID,
     cashFlowID,
+    transaction,
   }) => Wallet.create({
     name,
     balance,
     currency,
     user_id: userID,
     cash_flow_id: cashFlowID,
-  });
+  }, { transaction });
 
   static updateWalletBalance = async ({
     walletID, toWalletID, amount, generatedSlug,
