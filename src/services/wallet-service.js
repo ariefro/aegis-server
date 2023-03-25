@@ -56,18 +56,18 @@ class WalletService {
   }, { transaction });
 
   static updateWalletBalance = async ({
-    walletID, toWalletID, amount, generatedSlug,
+    walletID, toWalletID, amount, generatedSlug, transaction,
   }) => {
     const type = slugToType(generatedSlug);
 
     let balanceUpdate;
     if (type === Expense) {
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID }, transaction });
     } else if (type === Income) {
-      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID }, transaction });
     } else if (type === Transfer) {
-      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: toWalletID } });
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: toWalletID }, transaction });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID }, transaction });
     }
 
     return balanceUpdate;

@@ -12,6 +12,7 @@ class LogService {
     slug,
     type,
     message,
+    transaction,
   ) => Log.create({
     user_id: userID,
     wallet_id: walletID,
@@ -21,7 +22,7 @@ class LogService {
     slug,
     type,
     message,
-  });
+  }, { transaction });
 
   static updateLog = async (transactionID, {
     walletID,

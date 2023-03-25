@@ -75,6 +75,7 @@ class TransactionService {
     currency,
     name,
     amount,
+    t,
   }) => {
     const type = slugToType(generatedSlug);
 
@@ -86,7 +87,7 @@ class TransactionService {
       currency,
       wallet_id: walletID,
       to_wallet_id: toWalletID,
-    });
+    }, { transaction: t });
 
     return transaction;
   };

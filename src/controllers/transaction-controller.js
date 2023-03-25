@@ -1,3 +1,4 @@
+import { sequelize } from '../models';
 import WalletService from '../services/wallet-service';
 import TransactionService from '../services/transaction-service';
 import BaseController from './base-controller';
@@ -28,76 +29,81 @@ class TransactionController extends BaseController {
 
   static addTransaction = async (req, res) => {
     try {
-      const userID = req.decoded.id;
-      const {
-        slug, currency, amount, name, wallet_id: walletID, to_wallet_id: toWalletID,
-      } = req.body;
+      await sequelize.transaction(async (t) => {
+        const userID = req.decoded.id;
+        const {
+          slug, currency, amount, name, wallet_id: walletID, to_wallet_id: toWalletID,
+        } = req.body;
 
-      const wallet = await WalletService.getWalletByID(userID, walletID);
-      if (!wallet) {
-        throw new Error(Errors.WalletNotFound);
-      }
-
-      let destinationTransfer;
-      if (slug === Transfer) {
-        destinationTransfer = await WalletService.getWalletByID(userID, toWalletID);
-        if (!destinationTransfer) {
-          throw new Error(Errors.DestinationTransferNotFound);
+        const wallet = await WalletService.getWalletByID(userID, walletID);
+        if (!wallet) {
+          throw new Error(Errors.WalletNotFound);
         }
-      }
 
-      const generatedSlug = generateSlug(slug);
+        let destinationTransfer;
+        if (slug === Transfer) {
+          destinationTransfer = await WalletService.getWalletByID(userID, toWalletID);
+          if (!destinationTransfer) {
+            throw new Error(Errors.DestinationTransferNotFound);
+          }
+        }
 
-      const transaction = await TransactionService.addTransaction({
-        generatedSlug,
-        name,
-        currency,
-        amount,
-        walletID,
-        toWalletID,
-      });
-      if (!transaction) {
-        throw new Error(Errors.FailedToCreateTransaction);
-      }
+        const generatedSlug = generateSlug(slug);
 
-      await WalletService.updateWalletBalance({
-        walletID,
-        toWalletID,
-        amount,
-        generatedSlug,
-      });
-
-      let message;
-      if (destinationTransfer !== undefined) {
-        message = createNotificationMessage(
+        const transaction = await TransactionService.addTransaction({
           generatedSlug,
-          amount,
-          wallet.dataValues.name,
-          destinationTransfer.dataValues.name,
           name,
-        );
-      } else {
-        message = createNotificationMessage(
+          currency,
+          amount,
+          walletID,
+          toWalletID,
+          t,
+        });
+        if (!transaction) {
+          throw new Error(Errors.FailedToCreateTransaction);
+        }
+
+        await WalletService.updateWalletBalance({
+          walletID,
+          toWalletID,
+          amount,
           generatedSlug,
-          amount,
+          t,
+        });
+
+        let message;
+        if (destinationTransfer !== undefined) {
+          message = createNotificationMessage(
+            generatedSlug,
+            amount,
+            wallet.dataValues.name,
+            destinationTransfer.dataValues.name,
+            name,
+          );
+        } else {
+          message = createNotificationMessage(
+            generatedSlug,
+            amount,
+            wallet.dataValues.name,
+            undefined,
+            name,
+          );
+        }
+
+        const type = slugToType(generatedSlug);
+
+        await LogService.createLog(
+          userID,
+          walletID,
+          toWalletID,
+          transaction.dataValues.id,
           wallet.dataValues.name,
-          undefined,
-          name,
+          generatedSlug,
+          type,
+          message,
+          t,
         );
-      }
-
-      const type = slugToType(generatedSlug);
-
-      await LogService.createLog(
-        userID,
-        walletID,
-        toWalletID,
-        transaction.dataValues.id,
-        wallet.dataValues.name,
-        generatedSlug,
-        type,
-        message,
-      );
+      });
 
       return res.send(this.responseSuccess());
     } catch (err) {
