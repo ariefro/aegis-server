@@ -170,8 +170,8 @@ class TransactionService {
     return { income, expense };
   };
 
-  static deleteTransaction = async (transaction) => {
-    transaction.destroy();
+  static deleteTransaction = async (transaction, { t }) => {
+    await transaction.destroy({ transaction: t });
   };
 }
 

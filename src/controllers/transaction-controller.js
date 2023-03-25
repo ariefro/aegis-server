@@ -220,28 +220,31 @@ class TransactionController extends BaseController {
 
   static deleteTransaction = async (req, res) => {
     try {
-      const { id } = req.params;
+      await sequelize.transaction(async (t) => {
+        const { id } = req.params;
 
-      const transaction = await TransactionService.getTransactionByID(id);
-      if (!transaction) {
-        throw new Error(Errors.TransactionNotFound);
-      }
+        const transaction = await TransactionService.getTransactionByID(id);
+        if (!transaction) {
+          throw new Error(Errors.TransactionNotFound);
+        }
 
-      const {
-        wallet_id: walletID,
-        to_wallet_id: destinationTransferID,
-        amount,
-        type,
-      } = transaction.dataValues;
+        const {
+          wallet_id: walletID,
+          to_wallet_id: destinationTransferID,
+          amount,
+          type,
+        } = transaction.dataValues;
 
-      await WalletService.revertWalletBalance({
-        walletID,
-        destinationTransferID,
-        amount,
-        type,
+        await WalletService.revertWalletBalance({
+          walletID,
+          destinationTransferID,
+          amount,
+          type,
+          t,
+        });
+
+        await TransactionService.deleteTransaction(transaction, { t });
       });
-
-      await TransactionService.deleteTransaction(transaction);
 
       return res.send(this.responseSuccess());
     } catch (err) {
