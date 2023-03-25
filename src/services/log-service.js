@@ -12,6 +12,7 @@ class LogService {
     slug,
     type,
     message,
+    transaction,
   ) => Log.create({
     user_id: userID,
     wallet_id: walletID,
@@ -21,7 +22,7 @@ class LogService {
     slug,
     type,
     message,
-  });
+  }, { transaction });
 
   static updateLog = async (transactionID, {
     walletID,
@@ -30,6 +31,7 @@ class LogService {
     generatedSlug,
     type,
     message,
+    transaction,
   }) => Log.update(
     {
       wallet_id: walletID,
@@ -38,9 +40,11 @@ class LogService {
       slug: generatedSlug,
       type,
       message,
+      updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
     },
     {
       where: { transaction_id: transactionID },
+      transaction,
     },
   );
 
@@ -71,10 +75,12 @@ class LogService {
     attributes: { exclude: ['user_id', 'wallet_id', 'to_wallet_id', 'transaction_id', 'slug'] },
   });
 
-  static updateLogMessage = async (walletID) => {
+  static updateLogMessage = async (walletID, { transaction }) => {
     let result = await Log.update(
       {
         message: Sequelize.fn('replace', Sequelize.col('message'), 'to', '(wallet removed) to'),
+        updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
+
       },
       {
         where: {
@@ -83,6 +89,7 @@ class LogService {
             { type: Transfer },
           ],
         },
+        transaction,
       },
     );
 
@@ -97,6 +104,7 @@ class LogService {
             { type: Transfer },
           ],
         },
+        transaction,
       },
     );
 

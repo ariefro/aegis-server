@@ -27,7 +27,7 @@ describe('generate notification message', () => {
 
   it('should generate message when slug is top up', () => {
     const result = createNotificationMessage(
-      'top up',
+      'top-up',
       90000,
       'dummy source wallet',
       'dummy destination wallet',

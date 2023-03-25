@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import {
   Income, Expense, Transfer, DummyDate, TopUp,
 } from '../constants';
@@ -75,6 +75,7 @@ class TransactionService {
     currency,
     name,
     amount,
+    t,
   }) => {
     const type = slugToType(generatedSlug);
 
@@ -86,7 +87,7 @@ class TransactionService {
       currency,
       wallet_id: walletID,
       to_wallet_id: toWalletID,
-    });
+    }, { transaction: t });
 
     return transaction;
   };
@@ -99,6 +100,7 @@ class TransactionService {
     currency,
     generatedSlug,
     type,
+    transaction,
   }) => {
     let result;
     if (generatedSlug === Transfer && toWalletID) {
@@ -111,9 +113,11 @@ class TransactionService {
           currency,
           slug: generatedSlug,
           type,
+          updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
         },
         {
           where: { id },
+          transaction,
         },
       );
     } else {
@@ -125,9 +129,11 @@ class TransactionService {
           currency,
           slug: generatedSlug,
           type,
+          updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
         },
         {
           where: { id },
+          transaction,
         },
       );
     }
@@ -161,13 +167,11 @@ class TransactionService {
       }
     });
 
-    console.log({ income, expense });
-
     return { income, expense };
   };
 
-  static deleteTransaction = async (transaction) => {
-    transaction.destroy();
+  static deleteTransaction = async (transaction, { t }) => {
+    await transaction.destroy({ transaction: t });
   };
 }
 

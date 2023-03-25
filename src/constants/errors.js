@@ -51,6 +51,7 @@ const Errors = {
   NoTokenProvided: 'No token provided',
   TokenVersionNotValid: 'Token version not valid',
   NotJwtToken: 'Token is not JsonWebToken string',
+  MissingSecretKey: 'Missing secret key',
 };
 
 export default Errors;

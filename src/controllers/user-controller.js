@@ -1,3 +1,4 @@
+import { sequelize } from '../models';
 import constants from '../constants';
 import Errors from '../constants/errors';
 import CashFlowService from '../services/cash-flow-service';
@@ -22,43 +23,46 @@ class UserController extends BaseController {
 
   static registerUser = async (req, res) => {
     try {
-      const { username, email, password } = req.body;
+      await sequelize.transaction(async (transaction) => {
+        const { username, email, password } = req.body;
 
-      let user = await UserService.getUserByUsernameOrEmail({
-        username,
-        email,
+        let user = await UserService.getUserByUsernameOrEmail({
+          username,
+          email,
+        });
+        if (user) {
+          throw new Error(Errors.UserAlreadyExist);
+        }
+
+        user = await UserService.registerUser({
+          username,
+          email,
+          password,
+          transaction,
+        });
+        if (!user) {
+          throw new Error(Errors.FailedToRegister);
+        }
+
+        const refreshToken = await UserService.generateRefreshToken(user);
+
+        await UserService.updateToken({ username, refreshToken, transaction });
+
+        const cashFlow = await CashFlowService.addCashFlow({ transaction });
+        if (!cashFlow) {
+          throw new Error(Errors.FailedToCreateCashFlow);
+        }
+
+        const wallet = await WalletService.addWallet({
+          name: constants.DummyNameWallet,
+          userID: user.dataValues.id,
+          cashFlowID: cashFlow.dataValues.id,
+          transaction,
+        });
+        if (!wallet) {
+          throw new Error(Errors.FailedToCreateWallet);
+        }
       });
-      if (user) {
-        throw new Error(Errors.UserAlreadyExist);
-      }
-
-      user = await UserService.registerUser({
-        username,
-        email,
-        password,
-      });
-
-      if (!user) {
-        throw new Error(Errors.FailedToRegister);
-      }
-
-      const refreshToken = await UserService.generateRefreshToken(user);
-
-      await UserService.updateToken(username, refreshToken);
-
-      const cashFlow = await CashFlowService.addCashFlow();
-      if (!cashFlow) {
-        throw new Error(Errors.FailedToCreateCashFlow);
-      }
-
-      const wallet = await WalletService.addWallet({
-        name: constants.DummyNameWallet,
-        userID: user.dataValues.id,
-        cashFlowID: cashFlow.dataValues.id,
-      });
-      if (!wallet) {
-        throw new Error(Errors.FailedToCreateWallet);
-      }
 
       return res.send(this.responseSuccess());
     } catch (err) {

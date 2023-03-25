@@ -39,7 +39,7 @@ class BaseController {
         return this.responseFail(err.message, 404);
 
       default:
-        return this.responseFail(Errors.InternalServerError);
+        return this.responseFail(Errors.InternalServerError, 500);
     }
   };
 

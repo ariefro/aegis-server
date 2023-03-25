@@ -92,19 +92,7 @@ make migratedown
 
 ### DB Documentation
 
-- Install dbdocs
-
-  ```
-  pnpm install -g dbdocs
-  ```
-
-- Generate DB documentation:
-
-  ```
-  make dbdocs
-  ```
-
-- Access the DB documentation at [this address](https://dbdocs.io/ariefromadhon/aegis). Password: `secret`.
+- Access the DB documentation at [this address](https://dbdocs.io/ariefromadhon/lakoste). Password: `secret`.
 
 ## Development Flow
 
