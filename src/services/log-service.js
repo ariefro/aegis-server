@@ -75,7 +75,7 @@ class LogService {
     attributes: { exclude: ['user_id', 'wallet_id', 'to_wallet_id', 'transaction_id', 'slug'] },
   });
 
-  static updateLogMessage = async (walletID) => {
+  static updateLogMessage = async (walletID, { transaction }) => {
     let result = await Log.update(
       {
         message: Sequelize.fn('replace', Sequelize.col('message'), 'to', '(wallet removed) to'),
@@ -89,6 +89,7 @@ class LogService {
             { type: Transfer },
           ],
         },
+        transaction,
       },
     );
 
@@ -103,6 +104,7 @@ class LogService {
             { type: Transfer },
           ],
         },
+        transaction,
       },
     );
 

@@ -89,8 +89,8 @@ class WalletService {
     return balanceUpdate;
   };
 
-  static deleteWallet = async (wallet) => {
-    wallet.destroy();
+  static deleteWallet = async (wallet, { transaction }) => {
+    await wallet.destroy({ transaction });
   };
 
   static updateWallet = async (id, {

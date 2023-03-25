@@ -130,22 +130,26 @@ class WalletController extends BaseController {
 
   static deleteWallet = async (req, res) => {
     try {
-      const userId = req.decoded.id;
-      const { id } = req.params;
+      let userId;
+      let wallets;
 
-      let wallets = await WalletService.getWallets(userId);
-      if (wallets.length <= 1) {
-        throw new Error(Errors.UnableToDeleteWallet);
-      }
+      await sequelize.transaction(async (transaction) => {
+        userId = req.decoded.id;
+        const { id } = req.params;
 
-      const wallet = await WalletService.getWalletByID(userId, id);
-      if (!wallet) {
-        throw new Error(Errors.WalletNotFound);
-      }
+        wallets = await WalletService.getWallets(userId);
+        if (wallets.length <= 1) {
+          throw new Error(Errors.UnableToDeleteWallet);
+        }
 
-      await LogService.updateLogMessage(id);
+        const wallet = await WalletService.getWalletByID(userId, id);
+        if (!wallet) {
+          throw new Error(Errors.WalletNotFound);
+        }
 
-      await WalletService.deleteWallet(wallet);
+        await LogService.updateLogMessage(id, { transaction });
+        await WalletService.deleteWallet(wallet, { transaction });
+      });
 
       wallets = await WalletService.getWallets(userId);
 
