@@ -115,94 +115,100 @@ class TransactionController extends BaseController {
 
   static updateTransaction = async (req, res) => {
     try {
-      const { id } = req.params;
-      const userID = req.decoded.id;
-      const {
-        slug, currency, amount, name, wallet_id: walletID, to_wallet_id: toWalletID,
-      } = req.body;
+      await sequelize.transaction(async (t) => {
+        const { id } = req.params;
+        const userID = req.decoded.id;
+        const {
+          slug, currency, amount, name, wallet_id: walletID, to_wallet_id: toWalletID,
+        } = req.body;
 
-      const transaction = await TransactionService.getTransactionByID(id);
-      if (!transaction) {
-        throw new Error(Errors.TransactionNotFound);
-      }
-
-      const wallet = await WalletService.getWalletByID(userID, walletID);
-      if (!wallet) {
-        throw new Error(Errors.WalletNotFound);
-      }
-
-      const {
-        wallet_id: walletIDOfTransaction,
-        to_wallet_id: destinationTransferIDOfTransaction,
-        amount: amountOfTransaction,
-        type: typeOfTransaction,
-      } = transaction.dataValues;
-
-      let destinationTransfer;
-      if (slug === Transfer) {
-        destinationTransfer = await WalletService.getWalletByID(userID, toWalletID);
-        if (!destinationTransfer) {
-          throw new Error(Errors.DestinationTransferNotFound);
+        const transaction = await TransactionService.getTransactionByID(id);
+        if (!transaction) {
+          throw new Error(Errors.TransactionNotFound);
         }
-      }
 
-      const generatedSlug = generateSlug(slug);
-      const type = slugToType(generatedSlug);
+        const wallet = await WalletService.getWalletByID(userID, walletID);
+        if (!wallet) {
+          throw new Error(Errors.WalletNotFound);
+        }
 
-      await TransactionService.updateTransaction(id, {
-        walletID,
-        toWalletID,
-        name,
-        amount,
-        currency,
-        generatedSlug,
-        type,
-      });
+        const {
+          wallet_id: walletIDOfTransaction,
+          to_wallet_id: destinationTransferIDOfTransaction,
+          amount: amountOfTransaction,
+          type: typeOfTransaction,
+        } = transaction.dataValues;
 
-      await WalletService.revertWalletBalance({
-        walletID: walletIDOfTransaction,
-        destinationTransferID: destinationTransferIDOfTransaction,
-        amount: amountOfTransaction,
-        type: typeOfTransaction,
-      });
+        let destinationTransfer;
+        if (slug === Transfer) {
+          destinationTransfer = await WalletService.getWalletByID(userID, toWalletID);
+          if (!destinationTransfer) {
+            throw new Error(Errors.DestinationTransferNotFound);
+          }
+        }
 
-      await WalletService.updateWalletBalance({
-        walletID,
-        toWalletID,
-        amount,
-        generatedSlug,
-      });
+        const generatedSlug = generateSlug(slug);
+        const type = slugToType(generatedSlug);
 
-      let message;
-      if (destinationTransfer !== undefined) {
-        message = createNotificationMessage(
-          generatedSlug,
-          amount,
-          wallet.dataValues.name,
-          destinationTransfer.dataValues.name,
-          name,
-        );
-      } else {
-        message = createNotificationMessage(
-          generatedSlug,
-          amount,
-          wallet.dataValues.name,
-          undefined,
-          name,
-        );
-      }
-
-      await LogService.updateLog(
-        transaction.dataValues.id,
-        {
+        await TransactionService.updateTransaction(id, {
           walletID,
           toWalletID,
-          name: wallet.dataValues.name,
+          name,
+          amount,
+          currency,
           generatedSlug,
           type,
-          message,
-        },
-      );
+          t,
+        });
+
+        await WalletService.revertWalletBalance({
+          walletID: walletIDOfTransaction,
+          destinationTransferID: destinationTransferIDOfTransaction,
+          amount: amountOfTransaction,
+          type: typeOfTransaction,
+          t,
+        });
+
+        await WalletService.updateWalletBalance({
+          walletID,
+          toWalletID,
+          amount,
+          generatedSlug,
+          t,
+        });
+
+        let message;
+        if (destinationTransfer !== undefined) {
+          message = createNotificationMessage(
+            generatedSlug,
+            amount,
+            wallet.dataValues.name,
+            destinationTransfer.dataValues.name,
+            name,
+          );
+        } else {
+          message = createNotificationMessage(
+            generatedSlug,
+            amount,
+            wallet.dataValues.name,
+            undefined,
+            name,
+          );
+        }
+
+        await LogService.updateLog(
+          transaction.dataValues.id,
+          {
+            walletID,
+            toWalletID,
+            name: wallet.dataValues.name,
+            generatedSlug,
+            type,
+            message,
+            t,
+          },
+        );
+      });
 
       return res.send(this.responseSuccess());
     } catch (err) {

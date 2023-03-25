@@ -74,16 +74,16 @@ class WalletService {
   };
 
   static revertWalletBalance = async ({
-    walletID, destinationTransferID, amount, type,
+    walletID, destinationTransferID, amount, type, transaction,
   }) => {
     let balanceUpdate;
     if (type === Expense) {
-      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID }, transaction });
     } else if (type === Income) {
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID }, transaction });
     } else if (type === Transfer) {
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: destinationTransferID } });
-      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: destinationTransferID }, transaction });
+      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID }, transaction });
     }
 
     return balanceUpdate;

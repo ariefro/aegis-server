@@ -31,6 +31,7 @@ class LogService {
     generatedSlug,
     type,
     message,
+    transaction,
   }) => Log.update(
     {
       wallet_id: walletID,
@@ -43,6 +44,7 @@ class LogService {
     },
     {
       where: { transaction_id: transactionID },
+      transaction,
     },
   );
 

@@ -100,6 +100,7 @@ class TransactionService {
     currency,
     generatedSlug,
     type,
+    transaction,
   }) => {
     let result;
     if (generatedSlug === Transfer && toWalletID) {
@@ -116,6 +117,7 @@ class TransactionService {
         },
         {
           where: { id },
+          transaction,
         },
       );
     } else {
@@ -131,6 +133,7 @@ class TransactionService {
         },
         {
           where: { id },
+          transaction,
         },
       );
     }
