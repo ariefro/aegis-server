@@ -9,7 +9,7 @@ const Routes = {
   WalletID: '/wallet/:id',
   WalletDetail: '/wallet-detail/:id',
   Wallets: '/wallets',
-  WalletsToTransfer: '/wallets-to-transfer',
+  WalletsToTransfer: '/wallets-to-transfer/:id',
 
   Transaction: '/transaction',
   TransactionId: '/transaction/:id',

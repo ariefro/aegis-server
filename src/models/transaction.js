@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       Transaction.belongsTo(Wallet, {
         as: 'wallets',
         foreignKey: 'wallet_id',
-        onDelete: 'SET NULL',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
     };
@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
             tableName: 'wallets',
           },
         },
+        onDelete: 'CASCADE',
       },
       to_wallet_id: {
         type: DataTypes.UUID,
@@ -39,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
             tableName: 'wallets',
           },
         },
+        onDelete: 'CASCADE',
       },
       currency: {
         allowNull: false,
@@ -48,10 +50,9 @@ module.exports = (sequelize, DataTypes) => {
       type: {
         allowNull: false,
         type: DataTypes.ENUM('expense', 'income', 'transfer'),
-        defaultValue: 'expense',
       },
       slug: {
-        type: DataTypes.ENUM('expense', 'income', 'transfer', 'payment'),
+        type: DataTypes.ENUM('payout', 'top-up', 'transfer', 'payment'),
       },
       name: {
         type: DataTypes.STRING,
@@ -63,6 +64,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0,
       },
       created_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
         allowNull: false,
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

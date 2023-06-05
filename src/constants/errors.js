@@ -18,32 +18,40 @@ const Errors = {
   UsernameEmpty: 'Username cannot be empty',
   FailedToRegister: 'Failed to register user',
 
-  InvalidCurrency: 'Currency must be IDR',
+  AmountEmpty: 'Amount cannot be empty',
+  AmountOnlyNumbers: 'Amount must be positive numbers',
+  BalanceOnlyNumbers: 'Balance contains only numbers',
+  InvalidCurrency: 'Currency is only available in IDR',
+  InvalidStatus: 'Status can be either active or inactive',
   InvalidId: 'Invalid ID',
   NameEmpty: 'Name cannot be empty',
   NameOnlyLetters: 'Name contains only letters',
   NameAlreadyExists: 'Name already exists',
   BalanceEmpty: 'Balance cannot be empty',
+  UnableToAddWallet: 'Cannot add more wallet',
   WalletNotFound: 'Wallet not found',
-  DestinationWalletEmpty: 'Destination transfer cannot be empty',
-  DestinationWalletNotFound: 'Destination transfer not found',
+  WalletEmpty: 'Wallet ID cannot be empty',
+  DestinationTransferEmpty: 'Destination transfer cannot be empty',
+  DestinationTransferShouldBeEmpty: 'Destination transfer should be empty',
+  TypeOfTransactionShouldBeEmpty: 'Type of transaction should be empty',
+  DestinationTransferNotFound: 'Destination transfer not found',
   UnableToDeleteWallet: 'Unable to delete a wallet',
   FailedToCreateWallet: 'Failed to create a wallet',
 
   InvalidTypeTransaction:
-    'Transaction must be either both expense, payment, income, and transfer',
+  'Transaction must be either both payout, payment, top up, and transfer',
   FailedToCreateTransaction: 'Failed to create a transaction',
   TransactionNotFound: 'Transaction not found',
-  NameTransactionEmpty: 'Name of transaction cannot be empty',
+  NameTransactionOnlyLetters: 'Name of the transaction contains only letters',
+  NameTransactionEmpty: 'Name of the transaction cannot be empty',
+  UnableToCreateTransferTransaction: 'It is not possible to create a transfer transaction with the same account',
 
   FailedToCreateCashFlow: 'Failed to create a cash flow',
 
-  TokenExpiredError: 'TokenExpiredError',
-  JsonWebTokenError: 'JsonWebTokenError',
-  NotBeforeError: 'NotBeforeError',
-  MissingSecretKey: 'Missing secret key',
-
+  NoTokenProvided: 'No token provided',
   TokenVersionNotValid: 'Token version not valid',
+  NotJwtToken: 'Token is not JsonWebToken string',
+  MissingSecretKey: 'Missing secret key',
 };
 
 export default Errors;

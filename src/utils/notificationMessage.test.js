@@ -25,9 +25,9 @@ describe('generate notification message', () => {
     expect(result).toBe('You have spent Rp 90.000 for test');
   });
 
-  it('should generate message when slug is income', () => {
+  it('should generate message when slug is top up', () => {
     const result = createNotificationMessage(
-      'income',
+      'top-up',
       90000,
       'dummy source wallet',
       'dummy destination wallet',

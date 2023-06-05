@@ -1,11 +1,15 @@
-const { Expense, Payment } = require('../constants');
+const {
+  Expense, Transfer, Income, TopUp,
+} = require('../constants');
 
 function slugToType(slug) {
   let type;
-  if (slug === Payment) {
-    type = Expense;
+  if (slug === Transfer) {
+    type = Transfer;
+  } else if (slug === TopUp) {
+    type = Income;
   } else {
-    type = slug;
+    type = Expense;
   }
 
   return type;

@@ -1,4 +1,5 @@
-import { Op } from 'sequelize';
+/* eslint-disable max-len */
+import { Op, Sequelize } from 'sequelize';
 import { Income, Expense, Transfer } from '../constants';
 import { Wallet, CashFlow } from '../models';
 import slugToType from '../utils/slugToType';
@@ -8,7 +9,7 @@ class WalletService {
     where: {
       user_id: id,
     },
-    attributes: { exclude: ['cash_flow_id', 'user_id'] },
+    attributes: { exclude: ['cash_flow_id', 'user_id', 'status', 'currency', 'balance', 'created_at', 'updated_at'] },
   });
 
   static getWalletByID = async (userId, id) => Wallet.findOne({
@@ -36,7 +37,7 @@ class WalletService {
         [Op.not]: walletId,
       },
     },
-    attributes: { exclude: ['user_id', 'balance', 'currency', 'created_at'] },
+    attributes: { exclude: ['user_id', 'balance', 'cash_flow_id', 'status', 'currency', 'created_at', 'updated_at'] },
   });
 
   static addWallet = async ({
@@ -45,50 +46,51 @@ class WalletService {
     currency,
     userID,
     cashFlowID,
+    transaction,
   }) => Wallet.create({
     name,
     balance,
     currency,
     user_id: userID,
     cash_flow_id: cashFlowID,
-  });
+  }, { transaction });
 
   static updateWalletBalance = async ({
-    walletID, toWalletID, amount, slug,
+    walletID, toWalletID, amount, generatedSlug, transaction,
   }) => {
-    const type = slugToType(slug);
+    const type = slugToType(generatedSlug);
 
     let balanceUpdate;
     if (type === Expense) {
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID }, transaction });
     } else if (type === Income) {
-      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID }, transaction });
     } else if (type === Transfer) {
-      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: toWalletID } });
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID } });
+      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: toWalletID }, transaction });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID }, transaction });
     }
 
     return balanceUpdate;
   };
 
   static revertWalletBalance = async ({
-    walletId, toWalletId, amount, type,
+    walletID, destinationTransferID, amount, type, transaction,
   }) => {
     let balanceUpdate;
     if (type === Expense) {
-      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletId } });
+      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID }, transaction });
     } else if (type === Income) {
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletId } });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: walletID }, transaction });
     } else if (type === Transfer) {
-      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: toWalletId } });
-      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletId } });
+      balanceUpdate = await Wallet.decrement({ balance: amount }, { where: { id: destinationTransferID }, transaction });
+      balanceUpdate = await Wallet.increment({ balance: amount }, { where: { id: walletID }, transaction });
     }
 
     return balanceUpdate;
   };
 
-  static deleteWallet = async (wallet) => {
-    wallet.destroy();
+  static deleteWallet = async (wallet, { transaction }) => {
+    await wallet.destroy({ transaction });
   };
 
   static updateWallet = async (id, {
@@ -102,6 +104,7 @@ class WalletService {
       status,
       balance,
       currency,
+      updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
     },
     {
       where: { id },

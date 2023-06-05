@@ -15,6 +15,13 @@ class UserService {
     return user;
   };
 
+  static getUserById = async ({ id }) => {
+    const user = await User.findOne({
+      where: { id },
+    });
+    return user;
+  };
+
   static getUserByUsername = async ({ username }) => {
     const user = await User.findOne({
       where: { username },
@@ -23,11 +30,16 @@ class UserService {
     return user;
   };
 
-  static registerUser = async ({ username, email, password }) => User.create({
+  static registerUser = async ({
+    username,
+    email,
+    password,
+    transaction,
+  }) => User.create({
     username,
     email,
     password: hashSync(password, 10),
-  });
+  }, { transaction });
 
   static loginUser = async ({ user, password }) => {
     if (!user || !compareSync(password, user.password)) {
@@ -91,15 +103,18 @@ class UserService {
     return token;
   };
 
-  static updateToken = async (username, refresh_token) => {
-    await User.update(
-      { refresh_token },
+  static updateToken = async ({ username, refreshToken, transaction }) => {
+    const user = await User.update(
+      { refresh_token: refreshToken },
       {
         where: {
           username,
         },
+        transaction,
       },
     );
+
+    return user;
   };
 
   static updateTokenVersion = async (username, token_version) => {

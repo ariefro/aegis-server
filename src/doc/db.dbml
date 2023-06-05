@@ -1,7 +1,7 @@
-Project aegis {
+Project lakoste {
   database_type: 'PostgreSQL'
   Note: '''
-    # Lakoste Wallet Database
+    # Lakoste Database
   '''
 }
 
@@ -13,6 +13,7 @@ Table users as U {
   refresh_token varchar
   token_version integer [not null, default: 0]
   created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
 }
 
 enum wallet_status {
@@ -33,6 +34,7 @@ Table wallets as W {
   currency currency [not null, default: 'IDR']
   balance integer [not null, default: 0]
   created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
 }
 
 Table cash_flows as C {
@@ -40,6 +42,7 @@ Table cash_flows as C {
   income integer [not null, default: 0]
   expense integer [not null, default: 0]
   created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
 }
 
 enum types_of_transaction {
@@ -48,31 +51,26 @@ enum types_of_transaction {
   transfer
 }
 
-enum slugs_of_transaction {
-  expense
-  income
-  transfer
-  payment
-}
-
 Table transactions {
   id integer [pk]
   wallet_id integer [ref: > W.id, not null]
   to_wallet_id integer [ref: > W.id]
   currency currency [not null, default: 'IDR']
   type types_of_transaction [not null]
-  slug slugs_of_transaction
+  slug varchar [not null]
   name varchar [not null]
   amount integer [not null, default: 0]
   created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
 }
 
 Table logs {
   id integer [pk]
   user_id integer [ref: > U.id, not null]
   type types_of_transaction [not null]
-  slug slugs_of_transaction
+  slug varchar [not null]
   message varchar [not null]
   amount integer [not null, note: 'must be positive']
   created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
  }

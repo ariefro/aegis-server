@@ -1,75 +1,112 @@
 import { body, param, validationResult } from 'express-validator';
 import Services from '../constants/services';
 import Errors from '../constants/errors';
-import constants from '../constants';
-import Jwt from '../utils/jwt';
+import {
+  Amount,
+  Balance,
+  Currency, Email, ID, Name, Password, Status, Transfer, Type, TypeTransaction, Username, WalletID,
+} from '../constants';
 
 const validationRules = (service) => {
   switch (service) {
     case Services.RegisterUser: {
       return [
-        body(constants.Username, Errors.UsernameEmpty).exists().notEmpty(),
-        body(constants.Email, Errors.EmailEmpty).exists().notEmpty(),
-        body(constants.Email, Errors.InvalidEmail).isEmail(),
-        body(constants.Password, Errors.PasswordEmpty).exists(),
-        body(constants.Password, Errors.LengthPassword).isLength({ min: 8 }),
+        body(Username, Errors.UsernameEmpty).exists().notEmpty(),
+        body(Email, Errors.EmailEmpty).exists().notEmpty(),
+        body(Email, Errors.InvalidEmail).isEmail(),
+        body(Password, Errors.PasswordEmpty).exists(),
+        body(Password, Errors.LengthPassword).isLength({ min: 8 }),
       ];
     }
 
     case Services.Login: {
       return [
-        body(constants.Username, Errors.UsernameEmpty).exists().notEmpty(),
-        body(constants.Password, Errors.PasswordEmpty).exists().notEmpty(),
+        body(Username, Errors.UsernameEmpty).exists().notEmpty(),
+        body(Password, Errors.PasswordEmpty).exists().notEmpty(),
       ];
     }
 
     case Services.AddWallet: {
       return [
-        body(constants.Name, Errors.NameEmpty).exists().notEmpty(),
-        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Name, Errors.NameEmpty).exists().notEmpty(),
+        body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
       ];
     }
 
     case Services.UpdateWallet: {
       return [
-        body(constants.Name, Errors.NameEmpty).notEmpty(),
-        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
-        param(constants.Id, Errors.WalletNotFound).isUUID(),
+        param(ID, Errors.WalletNotFound).notEmpty().isUUID(),
+        body(Name, Errors.NameEmpty).notEmpty(),
+        body(Status, Errors.InvalidStatus).isIn(['active', 'inactive']),
+        body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Balance, Errors.BalanceEmpty).notEmpty(),
+        body(Balance, Errors.BalanceOnlyNumbers).isInt(),
       ];
     }
 
     case Services.DeleteWallet: {
-      return [param(constants.Id, Errors.WalletNotFound).isUUID()];
+      return [param(ID, Errors.WalletEmpty).notEmpty().isUUID()];
     }
 
     case Services.AddTransaction: {
       return [
-        body(constants.TypeTransaction, Errors.InvalidTypeTransaction).isIn([
-          'expense',
-          'income',
+        body(TypeTransaction, Errors.InvalidTypeTransaction).isIn([
+          'payout',
+          'top up',
           'transfer',
           'payment',
-        ]),
-        body(constants.Name, Errors.NameTransactionEmpty).notEmpty(),
-        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        ]).custom((value, { req }) => {
+          if (value !== Transfer && req.body.to_wallet_id) {
+            throw new Error(Errors.DestinationTransferShouldBeEmpty);
+          } else if (value === Transfer && !req.body.to_wallet_id) {
+            throw new Error(Errors.DestinationTransferEmpty);
+          } else if (value === Transfer && req.body.wallet_id === req.body.to_wallet_id) {
+            throw new Error(Errors.UnableToCreateTransferTransaction);
+          }
+
+          return true;
+        }),
+        body(WalletID, Errors.WalletEmpty).notEmpty().isUUID(),
+        body(Name, Errors.NameTransactionEmpty).notEmpty(),
+        body(Name, Errors.NameTransactionOnlyLetters).isString(),
+        body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Amount, Errors.AmountEmpty).notEmpty(),
+        body(Type, Errors.TypeOfTransactionShouldBeEmpty).isEmpty(),
+        body(Amount, Errors.AmountOnlyNumbers).isInt({ min: 0 }),
       ];
     }
 
     case Services.UpdateTransaction: {
       return [
-        body(constants.TypeTransaction, Errors.InvalidTypeTransaction).isIn([
-          'expense',
-          'income',
+        param(ID, Errors.TransactionNotFound).notEmpty().isUUID(),
+        body(TypeTransaction, Errors.InvalidTypeTransaction).isIn([
+          'payout',
+          'top up',
           'transfer',
           'payment',
-        ]),
-        body(constants.Name, Errors.NameTransactionEmpty).notEmpty(),
-        body(constants.Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        ]).custom((value, { req }) => {
+          if (value !== Transfer && req.body.to_wallet_id) {
+            throw new Error(Errors.DestinationTransferShouldBeEmpty);
+          } else if (value === Transfer && !req.body.to_wallet_id) {
+            throw new Error(Errors.DestinationTransferEmpty);
+          } else if (value === Transfer && req.body.wallet_id === req.body.to_wallet_id) {
+            throw new Error(Errors.UnableToCreateTransferTransaction);
+          }
+
+          return true;
+        }),
+        body(WalletID, Errors.WalletEmpty).notEmpty().isUUID(),
+        body(Name, Errors.NameTransactionEmpty).notEmpty(),
+        body(Name, Errors.NameTransactionOnlyLetters).isString(),
+        body(Currency, Errors.InvalidCurrency).isIn(['IDR']),
+        body(Type, Errors.TypeOfTransactionShouldBeEmpty).isEmpty(),
+        body(Amount, Errors.AmountEmpty).notEmpty(),
+        body(Amount, Errors.AmountOnlyNumbers).isInt({ min: 0 }),
       ];
     }
 
     case Services.DeleteTransaction: {
-      return [param(constants.Id, Errors.TransactionNotFound).isUUID()];
+      return [param(ID, Errors.TransactionNotFound).notEmpty().isUUID()];
     }
 
     default: {
@@ -89,27 +126,7 @@ const validate = (req, res, next) => {
   return res.status(400).send(extractedErrors[0]);
 };
 
-const validateRefreshToken = async (req, res, next) => {
-  const { refresh_token: refreshToken } = req.cookies;
-
-  if (!refreshToken) {
-    return res.status(403).send({
-      status: 'Error',
-      message: 'No token provided',
-    });
-  }
-
-  const verify = await Jwt.verifyRefreshToken(refreshToken);
-
-  if (verify.username) {
-    req.decoded = verify;
-    return next();
-  }
-  return res.status(400).send({ status: verify.name, message: verify.message });
-};
-
 module.exports = {
   validationRules,
   validate,
-  validateRefreshToken,
 };

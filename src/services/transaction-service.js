@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import {
-  Income, Expense, Transfer, DummyDate,
+  Income, Expense, Transfer, DummyDate, TopUp,
 } from '../constants';
 import { Transaction } from '../models';
 import slugToType from '../utils/slugToType';
@@ -48,10 +48,13 @@ class TransactionService {
       where,
       limit,
       offset,
+      order: [['created_at', 'DESC']],
     });
 
     rows.forEach((transaction) => {
-      if (transaction.dataValues.slug !== Income) {
+      if (transaction.dataValues.slug === Transfer && transaction.dataValues.to_wallet_id === id) {
+        transaction.dataValues.amount *= 1;
+      } else if (transaction.dataValues.slug !== TopUp) {
         transaction.dataValues.amount *= -1;
       }
     });
@@ -68,46 +71,75 @@ class TransactionService {
   static addTransaction = async ({
     walletID,
     toWalletID,
-    slug,
+    generatedSlug,
     currency,
     name,
     amount,
+    t,
   }) => {
-    const type = slugToType(slug);
+    const type = slugToType(generatedSlug);
 
     const transaction = Transaction.create({
       type,
-      slug,
+      slug: generatedSlug,
       name,
       amount,
       currency,
       wallet_id: walletID,
       to_wallet_id: toWalletID,
-    });
+    }, { transaction: t });
 
     return transaction;
   };
 
   static updateTransaction = async (id, {
-    walletId,
-    toWalletId,
-    note,
+    walletID,
+    toWalletID,
+    name,
     amount,
     currency,
+    generatedSlug,
     type,
-  }) => Transaction.update(
-    {
-      wallet_id: walletId,
-      to_wallet_id: toWalletId,
-      note,
-      amount,
-      currency,
-      type,
-    },
-    {
-      where: { id },
-    },
-  );
+    transaction,
+  }) => {
+    let result;
+    if (generatedSlug === Transfer && toWalletID) {
+      result = Transaction.update(
+        {
+          wallet_id: walletID,
+          to_wallet_id: toWalletID,
+          name,
+          amount,
+          currency,
+          slug: generatedSlug,
+          type,
+          updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
+        },
+        {
+          where: { id },
+          transaction,
+        },
+      );
+    } else {
+      result = Transaction.update(
+        {
+          wallet_id: walletID,
+          name,
+          amount,
+          currency,
+          slug: generatedSlug,
+          type,
+          updated_at: Sequelize.literal('CURRENT_TIMESTAMP'),
+        },
+        {
+          where: { id },
+          transaction,
+        },
+      );
+    }
+
+    return result;
+  };
 
   static getTransactionsByType = async (typeTransaction, id) => Transaction.findAll({
     where: {
@@ -138,8 +170,8 @@ class TransactionService {
     return { income, expense };
   };
 
-  static deleteTransaction = async (transaction) => {
-    transaction.destroy();
+  static deleteTransaction = async (transaction, { t }) => {
+    await transaction.destroy({ transaction: t });
   };
 }
 

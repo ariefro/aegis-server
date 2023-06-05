@@ -17,32 +17,33 @@ class BaseController {
       case Errors.NameOnlyLetters:
       case Errors.NameAlreadyExists:
       case Errors.BalanceEmpty:
-      case Errors.DestinationWalletEmpty:
+      case Errors.DestinationTransferEmpty:
       case Errors.FailedToCreateTransaction:
       case Errors.FailedToRegister:
       case Errors.FailedToCreateCashFlow:
       case Errors.FailedToCreateWallet:
-      case Errors.UserAlreadyExist:
+      case Errors.UnableToAddWallet:
       case Errors.UnableToDeleteWallet:
+      case Errors.UserAlreadyExist:
       case Errors.NotAllowedByCORS:
       case Errors.InvalidTypeTransaction:
       case Errors.MissingSecretKey:
-        return this.reponseFail(err.message, 400);
+        return this.responseFail(err.message, 400);
 
       case Errors.DataNotFound:
       case Errors.EmailNotFound:
-      case Errors.DestinationWalletNotFound:
+      case Errors.DestinationTransferNotFound:
       case Errors.TransactionNotFound:
       case Errors.UserNotFound:
       case Errors.WalletNotFound:
-        return this.reponseFail(err.message, 404);
+        return this.responseFail(err.message, 404);
 
       default:
-        return this.reponseFail(Errors.InternalServerError);
+        return this.responseFail(Errors.InternalServerError, 500);
     }
   };
 
-  static reponseSuccess = (message = null) => {
+  static responseSuccess = (message = null) => {
     const response = {
       message: constants.Success,
     };
@@ -54,7 +55,7 @@ class BaseController {
     return response;
   };
 
-  static reponseFail = (message, code) => {
+  static responseFail = (message, code) => {
     const response = {
       message: '',
       code: 500,

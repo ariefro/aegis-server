@@ -88,23 +88,11 @@ make migratedown
 
 ### API Documentation
 
-- Access the API documentation at [this address](https://documenter.getpostman.com/view/16991559/2s8YekREej).
+- Access the API documentation at [this address](https://lakoste.stoplight.io/docs/laskote-api/ce6d8e3a42caa-api-overview).
 
 ### DB Documentation
 
-- Install dbdocs
-
-  ```
-  pnpm install -g dbdocs
-  ```
-
-- Generate DB documentation:
-
-  ```
-  make dbdocs
-  ```
-
-- Access the DB documentation at [this address](https://dbdocs.io/ariefromadhon/aegis). Password: `secret`.
+- Access the DB documentation at [this address](https://dbdocs.io/ariefromadhon/lakoste). Password: `secret`.
 
 ## Development Flow
 
