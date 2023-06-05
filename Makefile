@@ -27,6 +27,12 @@ migrateup:
 migratedown:
 	pnpm sequelize-cli db:migrate:undo
 
+composeup:
+	docker compose --env-file .env up --build
+
+composedown:
+	docker compose --env-file .env down -v
+
 dev:
 	pnpm dev
 
@@ -34,4 +40,4 @@ dbdocs:
 	dbdocs build src/doc/db.dbml
 
 .PHONY:
-	postgres startcontainer createdb createdbdev dropdb dropdbdev migrateup migratedown dev
+	postgres startcontainer createdb createdbdev dropdb dropdbdev migrateup migratedown dev dbdocs
